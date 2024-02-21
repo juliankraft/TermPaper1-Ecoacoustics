@@ -1,165 +1,87 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This is a LaTeX template for Bachelor or Master theses at ZHAW, in accordance with the 
-% guidelines provided here:
-% https://www.zhaw.ch/en/lsfm/study/studiweb/master-ls/masters-thesis/
-%
-%
-% This template is based on previous works by:
-% Steve Gunn (http://users.ecs.soton.ac.uk/srg/softwaretools/document/templates/)
-% Sunil Patel (http://www.sunilpatel.co.uk/thesis-template/)
-% Matteo Delucchi (https://github.com/matteodelucchi/ZHAW_thesis-template)
-%
-% University specific changes were made by:
-% Matteo Delucchi
-% Norman Juchler
-% 
-% Template license:
-% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DOCUMENT SPECIFICATION
-%----------------------------------------------------------------------------------------
-\documentclass[
-    11pt,                      % Default font size
-    oneside,                  % One-side binding. Default: Two-side binding / alternating margins
-    ngerman,                   % Language. Use ngerman for German (Neue Rechtschreibung)
-    singlespacing,             % Spacing option: singlespacing, onehalfspacing or doublespacing
-    %nolistspacing,            % Set spacing in lists to single
-    %draft,                    % Enable draft mode: no pictures, no links, overfull hboxes indicated
-    liststotoc,               % Include list of figures/tables/etc in the table of contents
-    toctotoc,                 % Include the main table of contents to the table of contents
-    parskip,                  % Add vertical space between paragraphs
-    %nohyperref,               % Disable links in the entire document
-    helveticafont,             % Uncomment to use Helvetica font
-    headsepline,               % Show a horizontal line under the header
-    chapterinoneline,         % Place the chapter title and chapter number on one line
-    consistentlayout,          % Have the same layout for special chapters: 
-                               % declaration, abstract and acknowledgements
-]{MastersDoctoralThesis}
-
-% Uncomment the following lines to only include a subset of chapters.
-% This is useful for long documents, as typesetting takes a bit of time
-%\includeonly{
-%    Front/titlepage,
-%    Front/imprint,
-%    Front/abstract,
-%    %Front/declaration,
-%    %Front/acknowledgements,
-%    %Front/symbols,
-%    Chapters/Chapter1,
-%    %Chapters/Chapter2
-%    }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \documentclass[twoside,a4paper]{scrartcl}        % Koma-script class
+\documentclass[a4paper]{scrartcl}               % Koma-script class
 
 %----------------------------------------------------------------------------------------
 % PREAMBLE: PACKAGES AND CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 \input{preamble}
 
+% Includes for blind texts...
+\usepackage{blindtext}
+\usepackage{kantlipsum}
 
 %----------------------------------------------------------------------------------------
-% THESIS INFORMATION: MODIFY THIS SECTION!
+% PROJECT INFORMATION: MODIFY THIS SECTION!
 %----------------------------------------------------------------------------------------
+\projecttitle{Open Set Recognition for Hematology}
+\projecttype{Research project}
+\projectcode{OSR4H}
+\projectdate{\today}
+\keywords{Digital pathology, deep learning, open set recognition}
 
-% The information below is used in the following parts:
-% - Title page
-% - Imprint
-% - Abstract / Zusammenfassung
-% - Meta information of PDF
+%----------------------------------------------------------------------------------------
+% AUTHORS AND AFFILIATIONS
+%----------------------------------------------------------------------------------------
+\addauthor{A}{Norman}{Juchler}{juch@zhaw.ch}{1}
+\addauthor{B}{Chet G.P.}{Tinguely}{info@openai.com}{2}
+\addauthor{C}{Immanuel}{Kant}{juch@zhaw.ch}{3}
 
-\thesistitle{Titration von Aminosäuren}             % Thesis title,              command: \ttitle
-\thesistype{Laborbericht}             % Type of thesis (e.g. Master Thesis) \ttype
-\thesisdate{\today}                     % Date of submission                  \tdate
-\keywords{gravity, physics, disruptive science}
-                                        % Keywords for the thesis,            \keywordnames
-\author{Jonas Iseli\\ Julian Kraft}                  % Your name,                          \authorname
-\degree{Bachelor of Science}          % Degree name,                        \degreename
-\studyprogram{Umweltingenieurswesen} 
-                                        % Study program                       \studyprog
-\studyprogramlink{https://www.zhaw.ch/en/lsfm/study/master/applied-computational-life-sciences/}
-                                        % Link to study program               \studyproglink
+\addcollaborator{A}{Bugs}{Bunny}{bugs.bunny@warnerbros.com}{3}
+\addcollaborator{B}{Mickey}{Mouse}{mickey.mouse@disney.com}{4}
+\addcollaborator{C}{}{Goofy}{goofy@disney}{4}
 
-\supervisorA{Fabio Rezzonico}       % Name of supervisor 1,               \supnameA
-\supervisorAmail{e=mc2@zhaw.ch}         % Email address of supervisor 1,      \supmailA
-\supervisorAweb{https://en.wikipedia.org/wiki/Albert\_Einstein}  %            \supwebA
-\supervisorAinfo{                       % Formatted info about supervisor 1:  \supinfoA
-    \supnameA\\
-    Zurich University of Applied Sciences\\
-    Email: \href{mailto:\supmailA}{\supmailA}\\
-    Web: \href{\supwebA}{Link}
-}
+\addaffiliation{1}
+{Institute of Computational Life Sciences}
+{https://www.zhaw.ch/en/lsfm/institutes-centres/icls/}
+{Schloss 1, Wädenswil, Switzerland}
 
-% Keep empty if there is no supervisor 2: \supervisorB{}
-\supervisorB{Lukas Muri}              % Name of supervisor 2,               \supnameB
-\supervisorBmail{f=am@newton.com}       % Email address of supervisor 2,      \supmailB
-\supervisorBweb{https://en.wikipedia.org/wiki/John\_Locke}                  % \supwebB
-\supervisorBinfo{                       % Formatted info about supervisor 2:  \supinfoB
-    \supnameB\\
-    University of Cambridge\\
-    Email: \href{mailto:\supmailB}{\supmailB}\\
-    Web: \href{\supwebB}{Link}
-}
+\addaffiliation{2}
+{OpenAI}
+{https://openai.com/}
+{3180 18th Street, San Francisco, California, USA}
+
+\addaffiliation{3}
+{Albertus-Universität Königsberg}
+{https://en.wikipedia.org/wiki/University_of_Königsberg}
+{Ulitsa Universitetskaya 2, Kaliningrad, Russia}
+
+\addcompany{4}
+{Warner Bros.}
+{https://www.warnerbros.com/}
+{Warner Drive, Watford, United Kingdom}
+
+\addcompany{5}
+{Walt Disney Studios}
+{https://www.disneystudios.com/}
+{500 South Buena Vista Street, Burbank, California, USA}
 
 \university{Zurich University of Applied Sciences}
-                                        % University name                     \univname
-\universitygerman{Zürcher Hochschule für Angewandte Wissenschaften}
-                                        % University, in German               \univnameger
-\department{Life Sciences und Facility Management} 
-                                        % Department,                         \deptname
-\institute{Institut für Umwelt und Natürliche Resourcen} 
-                                        % Institute,                          \instname
-\group{Center of Computational Health} 
-                                        % Research group                      \groupname
-
-% Links
-\universitylink      {https://www.zhaw.ch/en/university/}                   % \univlink
-\universitylinkgerman{https://www.zhaw.ch/de/university/}                   % \univlinkger
-\departmentlink      {https://www.zhaw.ch/de/lsfm/}                         % \deptlink
-\institutelink       {https://www.zhaw.ch/en/lsfm/institutes-centres/icls/} % \instlink
-\grouplink           {https://www.zhaw.ch/en/lsfm/institutes-centres/icls/computational-health/} % \grplink
-
-
+\department{}
+\institute{} 
+\group{} 
 
 \AtBeginDocument{
-\hypersetup{pdftitle=\ttitle} % Set the PDF's title to your title
-\hypersetup{pdfauthor=\authorname} % Set the PDF's author to your name
-\hypersetup{pdfkeywords=\keywordnames} % Set the PDF's keywords to your keywords
+\hypersetup{pdftitle=\projecttitle} % Set the PDF's title to your title
+%\hypersetup{pdfauthor=\printauthors} % Set the PDF's author to your name
+\hypersetup{pdfkeywords=\keywords} % Set the PDF's keywords to your keywords
 }
 
 \begin{document}
-\frontmatter                  % Roman page numbering for the pre-content pages
-\pagestyle{plain}             % Default to the plain heading style until the thesis style 
-                              % is called for the body content
-
 
 %----------------------------------------------------------------------------------------
 % TITLE PAGE AND IMPRINT
 %----------------------------------------------------------------------------------------
-\include{Front/titlepage}
- \let\cleardoublepage\clearpage
-% \include{Front/imprint}
-
-
-%----------------------------------------------------------------------------------------
-% DECLARATION
-%----------------------------------------------------------------------------------------
-% Comment out this section if the declaration of originality from ZHAW is used.
-% \include{Front/declaration}
-% \cleardoublepage
-
+\include{front/titlepage}
+%\let\cleardoublepage\clearpage
+\include{front/imprint}
 
 %----------------------------------------------------------------------------------------
 % ABSTRACT
 %----------------------------------------------------------------------------------------
-\include{Front/abstract}
-
-
-%----------------------------------------------------------------------------------------
-% ACKNOWLEDGEMENTS
-% %----------------------------------------------------------------------------------------
-% \include{Front/acknowledgements}
-
+%\include{abstract}
 
 %----------------------------------------------------------------------------------------
 % LIST OF CONTENTS/FIGURES/TABLES PAGES
@@ -170,53 +92,25 @@
 %\listoftables     % Add list of tables
 
 
-%----------------------------------------------------------------------------------------
-% ABBREVIATIONS / SYMBOLS
-%----------------------------------------------------------------------------------------
-% \include{Front/symbols}
-
-
-%----------------------------------------------------------------------------------------
-% DEDICATION
-%----------------------------------------------------------------------------------------
-% \dedicatory{For/Dedicated to/To my\ldots} 
-
-
-%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % THESIS CONTENT - CHAPTERS
-%----------------------------------------------------------------------------------------
-\mainmatter % Begin numeric (1,2,3...) page numbering
-\pagestyle{thesis} % Return the page headers back to the "thesis" style
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\mainmatter                     % Begin numeric (1,2,3...) page numbering
+%\pagestyle{reportStyle}              % Reset the page headers
+\include{sections/section1}
+\include{sections/section2}
+\include{sections/section3}
 
-% Include the chapters of the thesis as separate files from the Chapters folder
-% Uncomment the lines as you write the chapters
-
-\include{Chapters/Chapter1}
-\include{Chapters/Chapter2} 
-\include{Chapters/Chapter3}
-\include{Chapters/Chapter4} 
-%\include{Chapters/Chapter5} 
+\appendix
+\include{sections/sectionA}
 
 
-%----------------------------------------------------------------------------------------
-% THESIS CONTENT - APPENDICES
-%----------------------------------------------------------------------------------------
-\appendix % Cue to tell LaTeX that the following "chapters" are Appendices
-
-% Include the appendices of the thesis as separate files from the Appendices folder
-% Uncomment the lines as you write the Appendices
-\include{Appendices/AppendixA}
-% from https://www.zhaw.ch/en/lsfm/study/studiweb/master-ls/masters-thesis/
-%\include{Appendices/AppendixB}
-%\include{Appendices/AppendixC}
-% \include{Appendices/DeclarationOfOriginalityZHAW} 
-
-
-%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BIBLIOGRAPHY
-%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \printbibliography[heading=bibintoc]
 
-%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \end{document}  

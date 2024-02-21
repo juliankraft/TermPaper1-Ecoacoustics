@@ -1,17 +1,25 @@
 % !TEX root = main.tex
+%
+% TODO: Have a clearer separation between ZHAW Thesis class and this preamble.
 
-%----------------------------
-%   Fonts and characters
-%----------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fonts and characters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Support for special characters
-\usepackage[utf8]{inputenc}    % Specify input encoding
-\usepackage[T1]{fontenc}       % Specify font encoding
+\usepackage[utf8]{inputenc}    % Input encoding: Support non-ascii characters
+\usepackage[T1]{fontenc}       % Font encoding: T1 is good choice for Europe
 
 % Set main fonts
 % Fonts catalogue: https://tug.org/FontCatalogue/
 \usepackage{mathpazo}          % Use the Palatino font by default
 \usepackage{beramono}          % Override the monospace/typewriter font
+
+\usepackage{amssymb}           % Maths
+\usepackage{amsmath}           % Maths 
+\usepackage{numprint}          % For nicely printing large numbers
+\usepackage{lmodern}           % Use LaTeX math fonts, requires T1
+
 
 % ZHAW title font
 % Try to load Helvetica Rounded Bold, and OpenType font.
@@ -25,19 +33,66 @@
     \newcommand{\zhawtitlefont}{\scshape}
 \fi
 
+\newcommand{\boldit}[1]{\textit{\textbf{#1}}}
+
 %\usepackage[scaled]{helvet}
 
-%----------------------------
-%   Environments
-%----------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Colors
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set up colors
+\usepackage[dvipsnames]{xcolor} % Color management
+% ZHAW Blue: Pantone 2945 U / R0 G100 B166
+\definecolor{zhawblue}{rgb}{0.00, 0.39, 0.65}
+\definecolor{zhawlightblue}{rgb}{0.82, 0.88, 0.93}
+% Colors related to code listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codebackground}{rgb}{0.93,0.94,0.95}
+% Colors related to tables
+\definecolor{tablegray}{rgb}{0.9,0.9,0.9}
+\colorlet{tableheader}{tablegray}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Environments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[ngerman]{babel}    % Language support
+
+\usepackage{hyperref}          % Create hypertext links
+\usepackage{graphicx}          % Include graphics
+\usepackage{tabularx}          % Create nicer tables
+\usepackage{booktabs}          % To further beautify tables
 
 \usepackage{caption}           % Customized caption
 \usepackage{subcaption}        % Subfigure captions
 \usepackage{makecell}          % Per-cell formatting in tables (\makecell)
 \usepackage{pdfpages}          % Required to include PDF files/graphics (\includepdf)
+\usepackage{colortbl}          % Tables with colors
 
 \usepackage{todonotes}         % Introduces the command \todo
 \setlength{\marginparwidth}{2.5cm} % Adjust this if the todo notes are out of margins
+\usepackage{array,ragged2e}    % For ragged alignment of multi-line table cells
+
+% Adjust tables
+\colorlet{tableheadcolor}{gray!25}                % Table header colour
+\newcommand{\headcol}{\rowcolor{tableheadcolor}}% % The color of the head
+\newcommand{\topline}{\arrayrulecolor{black}      %
+                      \specialrule{0.1em}{\abovetopsep}{0.5pt}%
+                      \arrayrulecolor{tableheadcolor}%
+                      \specialrule{\belowrulesep}{0pt}{-3pt}%
+            \arrayrulecolor{black}
+            }
+\newcommand{\midline}{\arrayrulecolor{tableheadcolor}
+            \specialrule{\aboverulesep}{-1pt}{0pt}%
+            \arrayrulecolor{black}\specialrule{\lightrulewidth}{0pt}{0pt}%
+            \arrayrulecolor{white}\specialrule{\belowrulesep}{0pt}{-3pt}%
+            \arrayrulecolor{black}
+            }
+\newcommand{\bottomline}{\arrayrulecolor{white}\specialrule{\aboverulesep}{0pt}{-2pt}%
+            \arrayrulecolor{black}\specialrule{\heavyrulewidth}{0pt}{\belowbottomsep}}%
 
 % Create boxes as follows:
 % \begin{colorbox}{red}{2}
@@ -52,23 +107,21 @@
     colframe=#1!75!black
 }
 
-%----------------------------
-%   Colors
-%----------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Code listings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\captionsetup{format=plain,             % plain or hang
+              justification=justified,  % justified, centering, raggedright, ...
+              labelfont=bf,
+              font=small,
+              margin=20pt}
+              
 
-% Set up colors
-\usepackage{xcolor}
-% ZHAW Blue: Pantone 2945 U / R0 G100 B166
-\definecolor{zhawblue}{rgb}{0.00, 0.39, 0.65}
-% Colors related to code listings
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{codebackground}{rgb}{0.93,0.94,0.95}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Code listings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%----------------------------
-%   Code listings
-%----------------------------
+\newcommand{\code}[1]{\texttt{#1}}
 
 % Setup code listings
 \usepackage{listings}
@@ -78,7 +131,7 @@
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
+    basicstyle=\ttfamily\scriptsize,
     breakatwhitespace=false,
     breaklines=true,
 %    captionpos=b,
@@ -92,7 +145,7 @@
 }
 \lstset{style=mystyle}
 
-% minted is an alternative code listing package. (See chapter 2)
+% minted is an alternative code listing package. (See appendix A)
 % For it to run successfully, ensure the following:
 % - the Python package Pygments. Install with the following command:
 %       python -m pip install Pygments
@@ -106,9 +159,10 @@
 % One could also create an own style in Pygments
 % https://pygments.org/docs/styles/#creating-own-styles
 
-%----------------------------
-%   References
-%----------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% References
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Set up references
 \usepackage[
@@ -116,25 +170,104 @@
     sorting=none,              % Enumerates the reference in order of their appearance
     style=numeric-comp         % Choose here your preferred citation style
 ]{biblatex}
-\addbibresource{example.bib}   % The filename of the bibliography
+\addbibresource{references.bib} % The filename of the bibliography
 \usepackage[autostyle=true]{csquotes} 
                                % Required to generate language-dependent quotes 
                                % in the bibliography
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MARGIN SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{geometry}
+\geometry{
+    paper=a4paper,       % Change to letterpaper for US letter
+    %inner=2.5cm,        % Inner margin
+    %outer=3.8cm,        % Outer margin
+    %top=1.5cm,          % Top margin
+    bottom=4.cm,         % Bottom margin
+    bindingoffset=.5cm,  % Binding offset
+    %showframe,          % Show the type block of the page
+}
+
+% Other layout settings
+\setlength\parindent{0em} % No indent
+\setlength{\parskip}{1em}
+%\usepackage{parskip}
+
+
+\setlength{\intextsep}{30pt}   % Distance between image and text 
+\usepackage{enumitem}          % Layout control for list environments (e.g, itemize)
+\setlist{noitemsep}            % Suppress extra spaces between items
+%\setlist{nosep}               % Suppress spaces before/after list environments
+
+
 %----------------------------------------------------------------------------------------
-%   MARGIN SETTINGS
+%   PENALTIES
 %----------------------------------------------------------------------------------------
 
-\geometry{
-    paper=a4paper,      % Change to letterpaper for US letter
-    inner=2.5cm,        % Inner margin
-    outer=3.8cm,        % Outer margin
-    top=1.5cm,          % Top margin
-    bottom=1.5cm,       % Bottom margin
-    bindingoffset=.5cm, % Binding offset
-    %showframe,         % Show the type block of the page
+\doublehyphendemerits=10000 % No consecutive line hyphens
+\brokenpenalty=10000 % No broken words across columns/pages
+\widowpenalty=9999 % Almost no widows at bottom of page
+\clubpenalty=9999 % Almost no orphans at top of page
+\interfootnotelinepenalty=9999 % Almost never break footnotes
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MANAGE AUTHOR LISTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[affilmode=count]{authors}
+
+
+% Trick: Convert the setter into a getter.
+\NewDocumentCommand{\projecttitle}{m}{\renewcommand{\projecttitle}{#1}}
+\NewDocumentCommand{\projecttype}{m}{\renewcommand{\projecttype}{#1}}
+\NewDocumentCommand{\projectcode}{m}{\renewcommand{\projectcode}{#1}}
+\NewDocumentCommand{\projectdate}{m}{\renewcommand{\projectdate}{#1}}
+\NewDocumentCommand{\keywords}{m}{\renewcommand{\keywords}{#1}}
+
+\NewDocumentCommand{\university}{m}{\renewcommand{\university}{#1}}
+\NewDocumentCommand{\department}{m}{\renewcommand{\department}{#1}}
+\NewDocumentCommand{\institute}{m}{\renewcommand{\institute}{#1}}
+\NewDocumentCommand{\group}{m}{\renewcommand{\group}{#1}}
+
+
+%----------------------------------------------------------------------------------------
+%   HEADERS AND FOOTERS
+%----------------------------------------------------------------------------------------
+% Notes:
+% - In twoside mode, left and right side pages may differ
+% - Pages: left = even, right = odd
+%   Chapters usually are forced to start at odd pages.
+% - \markboth{left}{right} how left and right pages are marked
+% - \automark is a convenience command from the scrlayer-scrpage package. It issues 
+%   that \markboth is called for every \chapter and \section command.
+% - Historical note: scrlayer-scrpage is the successor of scrpage2
+% - Refs:
+%    \markboth:  https://tex.stackexchange.com/questions/198676
+%    \automark:  https://tex.stackexchange.com/questions/34269/
+%    \automark*: https://tex.stackexchange.com/questions/348550/
+%
+\usepackage[markcase=used]{scrlayer-scrpage}
+\ifoot{}% Empty inner footer by default
+\ofoot{}% Empty outer footer by default
+\providepairofpagestyles{basicStyle}{
+    % Header specs for style basicStyle
+    \clearpairofpagestyles%
+    \automark[section]{section}
+    \ihead{\headmark}% Inner header
+    \ohead[\pagemark]{\pagemark}% Outer header
 }
-\setlength{\parskip}{1em}
-\usepackage{enumitem}          % Layout control for list environments (e.g, itemize)
-%\setlist{noitemsep}           % Suppress extra spaces between items
-%\setlist{nosep}               % Suppress spaces before/after list environments
+\pagestyle{basicStyle}
+
+\providepairofpagestyles[basicStyle]{reportStyle}{%
+    \automark*[subsection]{}% Override right marks with section title once one is set
+                         % Otherwise, use the chapter title -> basicStyle
+}
+\pagestyle{reportStyle}
+
+\KOMAoption{headsepline}{true}
+
+
+
+

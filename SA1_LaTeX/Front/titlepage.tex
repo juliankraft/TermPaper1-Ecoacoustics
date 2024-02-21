@@ -1,8 +1,11 @@
 % !TEX root = ../main.tex
 
-%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TITLE PAGE
-%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% New command to make the lines in the title page
+\newcommand{\HRule}{\rule{.9\linewidth}{.6pt}} 
 
 \newgeometry{margin=1in}
 \begin{titlepage}
@@ -15,52 +18,104 @@
 
 \ifxetex
     \vspace{0.6cm}
-    {\zhawtitlefont\color{zhawblue}\LARGE \univname\par}   % University
+    {\zhawtitlefont\color{zhawblue}\LARGE\university\par}   % University
     \vspace{0.2cm}
 \else
     \vspace{0.87cm}
-    {\includegraphics[height=17.9pt]{Figures/zhaw_font_deu_font}\par}
+    {\includegraphics[height=17.9pt]{figures/zhaw_font_eng_font}\par}
     \vspace{0.05cm}
 \fi
-{\Large Departement für \deptname\par}                      % Department
+{\Large \ifdefempty{\department}{}{Department \department\par}} % Department
 \vspace{0.2cm}
-{\Large \instname\par}                                 % Institute
+{\Large \institute\par}                                     % Institute
 \vspace{3.5cm}                            
-\textsc{\Large \ttype}                                 % Thesis type
+\textsc{\Large \projecttype}                                % Project type
 \vspace{0.2cm}
 \HRule 
 \vspace{0.4cm}
-{\huge \bfseries \ttitle\par}                          % Thesis title
+{\huge \bfseries \projecttitle\par}                         % Project title
 \vspace{0.4cm}  
 \HRule
 \vspace{1.5cm}
 
- 
-\begin{minipage}[t]{0.4\textwidth}
-\begin{flushleft} 
-    \large
-    \emph{Autoren:}\\
-    \authorname
+
+
+\begin{footnotesize}
+\begin{tabular}{lr}
+
+% Authors
+\begin{minipage}[t]{0.41\textwidth}
+\begin{flushleft}
+    \boldit{Authors:}\\
+    \printauthors[\\][email3]% No whitespace!
+    \vspace{1cm}
 \end{flushleft}
 \end{minipage}
-\begin{minipage}[t]{0.4\textwidth}
-\begin{flushright} 
-    \large
-    \emph{Betreuer:} \\
-    \supnameA \\
-    \supnameB
+
+&
+
+% Collaborators
+\begin{minipage}[t]{0.41\textwidth}
+\begin{flushright}
+    \boldit{Collaborators:} \\
+    \printcollaborators[\\][email3]% No whitespace!
+    \vspace{1cm}
 \end{flushright}
 \end{minipage}
+
+\\
+
+% Affiliations
+\begin{minipage}[t]{0.41\textwidth}
+\begin{flushleft}
+    \boldit{Affiliations:} \\
+    \printaffiliations[\\]
+\end{flushleft}
+\end{minipage}
+
+&
+
+% Industrial partners
+\begin{minipage}[t]{0.41\textwidth}
+\begin{flushright}
+    \boldit{Industry partner:} \\
+    \printcompanies[\\]
+\end{flushright}
+\end{minipage}
+
+\end{tabular}
+\end{footnotesize}
+
+% \begin{footnotesize}
+% \begin{minipage}[t]{0.4\textwidth}
+% \begin{flushleft}
+%     \emph{Authors:}\\
+%     \printauthors[\\][compact]\\
+%     \vspace{0.5cm}
+%     \emph{Affiliations:} \\
+%     \printaffiliations[\\]
+% \end{flushleft}
+% \end{minipage}
+% \begin{minipage}[t]{0.4\textwidth}
+% \begin{flushright}
+%     \emph{Partners:} \\
+%     \printcollaborators[\\][compact]\\
+%     \vspace{0.5cm}
+%     \emph{Industrial partner:} \\
+%     \printcompanies[\\]
+% \end{flushright}
+% \end{minipage}
+% \end{footnotesize}
+
 \vspace{2cm}
  
 \vfill
 
 {\large
-Eingereicht am\\
-\tdate\\
+\projectdate\\
 \vspace{1.5cm}
-Studiengang:\\
-\studyprog\\
+Project Code:\\
+\projectcode
 }
 \vfill
 \end{center}

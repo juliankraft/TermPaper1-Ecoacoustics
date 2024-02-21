@@ -1,0 +1,38 @@
+% Indicate the main file. Must go at the beginning of the file.
+% !TEX root = ../main.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Materials and Methods}
+\label{section2}
+\kant[14-15]
+\begin{align*}
+C(x) &= C_1(x) + C_2(x) \\
+&= A_1e^{-\lambda_1 x} + A_2e^{-\lambda_2 (a-x)}
+\end{align*}
+\kant[19]\vspace{-0.5cm}
+\begin{align*}
+C'(x) &= -A_1\lambda_1 e^{-\lambda_1 x} + A_2 \lambda_2 e^{-\lambda_2 (a-x)} \stackrel{!}{=} 0\\
+ &= -A_1\lambda_1 e^{-\lambda_1 x} + A_2 \lambda_2 e^{-\lambda_2 a} e^{\lambda_2 x} && | \cdot e^{+\lambda_1 x}\\
+ &= -A_1\lambda_1 + A_2 \lambda_2 e^{-\lambda_2 a} e^{x (\lambda_1+\lambda_2)} && | \text{ rearrange...} \\
+ e^{x(\lambda_1+\lambda_2)} &= \frac{A_1\lambda_1}{A_2\lambda_2}\cdot e^{\lambda_2 a} &&|\ln(\cdot)\\
+x(\lambda_1 + \lambda_2) &= \ln\left(\frac{A_1\lambda_1}{A_2\lambda_2}\cdot e^{\lambda_2 a}\right)\\
+ &= \ln\left(\frac{A_1\lambda_1}{A_2\lambda_2}\right) + \lambda_2 a \\
+ &= \ln(A_1) + \ln(\lambda_1) - \ln(A_2) - \ln(\lambda_2) + \lambda_2 a
+\end{align*}
+
+
+\subsection{Clinical data}
+\kant[14-16]
+\subsection{Analysis}
+\kant[45]
+\begin{align*}
+C(x) &= C_1(x) + C_2(x) \\
+&= A_1e^{-\lambda_1 x} + A_2e^{-\lambda_2 (a-x)}
+\end{align*}
+
+\kant[45]
+
+

@@ -1,0 +1,493 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Author:  Norman Juchler
+%          Zurich University of Applied Sciences
+% Date:    28.12.22
+% Version: 1.0
+% License: Creative Commons CC BY 4.0
+%          https://creativecommons.org/licenses/by/4.0/
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Some useful resources:
+% Optional arguments / ifthen: https://stackoverflow.com/questions/1812214/
+% Counter / etoolbox:          https://tex.stackexchange.com/a/347135/64217
+% Iteration over two lists:    https://tex.stackexchange.com/questions/12187
+% Use of authblk-variables:    https://tex.stackexchange.com/a/655930/64217
+% A very instructional tutorial for how to use NewDocumentCommand
+%    https://www.texdev.net/2010/05/23/from-newcommand-to-newdocumentcommand/
+% Another very instructional tutorial for how to work with LaTeX3:
+%    https://www.alanshawn.com/latex3-tutorial/
+
+
+\NeedsTeXFormat{LaTeX2e}
+\newcommand{\packagename}{authors}
+\ProvidesPackage{\packagename}[2022.12.14 v1.0]
+
+\RequirePackage{keyval}
+\RequirePackage{etoolbox}
+\RequirePackage{hyperref}
+\RequirePackage{ifthen}
+\RequirePackage{kvoptions}
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+
+% Use \SetupKeyvalOptions to specify abbreviated names and
+% prefixes. By default, kvoptions uses the package name.
+%\SetupKeyvalOptions{%
+%    family=authors,
+%    prefix=authors@,
+%}
+
+\DeclareBoolOption{verbose}
+
+% \DeclareStringOption[DEFAULT1]{NAME}
+% \DeclareStringOption[DEFAULT1]{NAME}[DEFAULT2]
+% DEFAULT1: set if package option NAME is not set
+% DEFAULT2: set if package option mode is used but not set
+% 
+% For example:
+% \usepackage{authors}                 --->     \authors@NAME: DEFAULT1
+% \usepackage[mode]{authors}           --->     \authors@NAME: DEFAULT2
+% \usepackage[mode=brief]{authors}     --->     \authors@NAME: brief
+
+\DeclareStringOption[brief]{mode}
+\DeclareStringOption[verbatim]{affilmode}
+\DeclareStringOption[arabic]{affilcountrepr}
+\ProcessKeyvalOptions*\relax
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printlist}{O{, }m}{%
+  % Delayed execution of list separator
+  % Skip use of separator for the first item
+  % http://tex.stackexchange.com/a/89187/5764
+  \def\listsep{\def\listsep{#1}}%
+  \renewcommand{\do}[1]{\listsep##1}%
+  \dolistloop#2%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\addpersoncommands}{mmmmmm}{%
+    \csedef{#1#2}{#3~#4}%     \authorA:       forename~surename
+    \csedef{#1#2*}{#3 #4}%    \authorA*:      forename surename
+    \csedef{#1email#2}{#5}%   \authoremailA:  email@address.com
+    \csedef{#1affil#2}{#6}%   \authoraffilA:  affilid
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Utilities
+\ExplSyntaxOn
+
+\cs_generate_variant:Nn \str_case:nn {xn}
+\cs_new_protected:Npn \authors_applyaffilcountrepr_main:n #1
+  {
+    \int_set:Nn \l_tmpa_int {#1}
+    \str_set:Nx \l_tmpa_str {\authors@affilcountrepr}
+    \str_case:xn {\l_tmpa_str} {
+      {alph}     {\int_to_alph:n {\l_tmpa_int}}
+      {Alph}     {\int_to_Alph:n {\l_tmpa_int}}
+      {arabic}   {\int_to_arabic:n {\l_tmpa_int}}
+      {roman}    {\int_to_roman:n {\l_tmpa_int}}
+      {Roman}    {\int_to_Roman:n {\l_tmpa_int}}
+      {fnsymbol} {\int_to_symbols:nnn {\l_tmpa_int} {9}
+                 { {1} {*}
+                   {2} {†}
+                   {3} {‡}
+                   {4} {§}
+                   {5} {¶}
+                   {6} {∥}
+                   {7} {∗∗}
+                   {8} {††}
+                   {9} {‡‡}}
+                  }
+    }
+  }
+
+  \NewDocumentCommand{\applyaffilcountrepr}{m}{%
+    \authors_applyaffilcountrepr_main:n {#1}
+  }
+\ExplSyntaxOff
+
+
+\NewDocumentCommand{\affilcountrepr}{}{\authors@affilcountrepr}
+
+
+
+% Code is based on two sources:
+% [1] https://tex.stackexchange.com/questions/327525/ (Split string)
+% [2] https://tex.stackexchange.com/questions/501221/ (Return value)
+% [3] https://www.alanshawn.com/latex3-tutorial/
+% [4] The LATEX3 Interfaces
+%
+% Code modified to support expansion of the input (argument #2)
+% See also the docs: "The expl3 package and LATEX3 programming"
+%
+% My own take about LaTeX3: It's still incredibly convoluted and
+% hard to ready. But expl3 tries to improve several shortcomings. 
+% In particular, it aims to improve the separation from private 
+% and public functions/macros. And the signature of objects and 
+% functions is made clearer using new conventions.
+% Use LaTeX3 in situations where one needs programming.
+%
+% Nnn, Noo, Nn, Npn, etc: those are argument specifications
+% N: Single token
+% n: Unexpanded token or braced token list
+% p: Primitive TeX parameter specification
+% V: Value of a variable
+% o: One-level-expanded token or braced token list.
+% x: Fully-expanded token or braced token list
+%
+% Below, replaced 'x' by 'o' if only one-level expansion is needed.
+
+\ExplSyntaxOn
+% VARIABLE DECLARATIONS:
+\seq_new:N \l_authors_args_seq
+
+\cs_generate_variant:Nn \seq_set_split:Nnn {Noo}
+\cs_generate_variant:Nn \seq_set_split:Nnn {Nox}
+
+\NewDocumentCommand\printseq{O{,~}m}
+  {
+    \seq_use:Nn #2 { #1 }
+  }
+\NewDocumentCommand\splitaffils{O{,}m}
+  {
+    \authors_splitaffil_main:nxN {#1}{#2}
+  }
+\cs_new_protected:Npn \authors_splitaffil_main:nxN #1 #2
+  {
+    \seq_set_split:Nox \l_authors_args_seq {#1} {#2}
+    %\seq_map_inline:Nn \l_authors_args_seq { \csuse{allaffilcnt##1}, }
+    \int_step_inline:nn {\seq_count:N \l_authors_args_seq}{%
+      % get the ##1-th element from \l_authors_args_seq
+      \csuse{allaffilcnt\seq_item:Nn \l_authors_args_seq {##1}}%
+      % determine if it is the last element, otherwise append comma
+      \int_compare:nNnTF {##1} = {\seq_count:N \l_authors_args_seq} {} {,} %
+    }
+  }
+\NewDocumentCommand\splitstring{O{,}mm}
+  {
+    %\authors_splitstring_main:nx {#1}{#2}
+    \authors_splitstringret_main:nxN {#1}{#2}{#3}
+    %\authors_ShowArgs:N \l_authors_args_seq
+    %\authors_ShowArgs:N {#3}
+  }
+\cs_new_protected:Npn \authors_splitstring_main:nx #1 #2
+  {
+    \seq_set_split:Nox \l_authors_args_seq {#1} {#2}
+    %\authors_ShowArgs:N \l_authors_args_seq
+  }
+\cs_new_protected:Npn \authors_splitstringret_main:nxN #1 #2 #3
+  {
+    \seq_clear_new:N #3
+    \seq_set_split:Nox #3 {#1} {#2}
+    %\authors_ShowArgs:N {#3}
+  }
+\cs_new:Npn \authors_ShowArgs:N #1
+  {
+   \seq_use:Nn #1 { ~ }
+  }
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\indy}{\space\space\space\space}
+\newcommand{\bslash}{\@backslashchar}
+
+\NewDocumentCommand{\messagepersoncommands}{mm}{%
+    % Message the commands for a person to the console
+    \typeout{Commands for #1 #2:}%
+    \typeout{- Name (non-separable):}%
+    \typeout{\indy Command:\space\bslash#1#2 or \bslash csuse{#1#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1#2}}%
+    \typeout{- Name (separable):}%
+    \typeout{\indy Command:\space\bslash#1#2* or \bslash csuse{#1#2*}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1#2*}}%
+    \typeout{- Email:}%
+    \typeout{\indy Command:\space\bslash#1email#2 or \bslash csuse{#1email#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1email#2}}%
+    \typeout{- Affiliation:}%
+    \typeout{\indy Command:\space\bslash#1affil#2 or \bslash csuse{#1affil#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1affil#2}}%
+    \typeout{}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\addauthor}{mmmmm}{%
+    % Usage:  \addauthor{A}{forename}{surename}{email}{affilid}
+    % Action: Creates macros:
+    %         - \authorA
+    %         - \authoremailA
+    %         - \authoraffilA
+    %         Appends "A" to list \authorids
+    \addpersoncommands{author}{#1}{#2}{#3}{#4}{#5}%
+    \listadd{\authorids}{#1}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\addcollaborator}{mmmmm}{%
+    % Usage:  \addcollaborator{A}{forename}{surename}{email}{affilid}
+    % Action: Creates macros:
+    %         - \collaboratorA
+    %         - \collaboratoremailA
+    %         - \collaboratoraffilA
+    %         Appends "A" to list \collaboratorids
+    \addpersoncommands{collaborator}{#1}{#2}{#3}{#4}{#5}%
+    \listadd{\collaboratorids}{#1}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Have one counter for both affiliations and companies
+\newcounter{orgcounter}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\addaffiliationcommands}{mmmmmm}{%
+    \csedef{#1#2}{#3}%
+    \csedef{#1url#2}{#4}%
+    \csedef{#1address#2}{#5}%
+    \csedef{#1id#2}{#2}%
+    \csedef{#1cnt#2}{\applyaffilcountrepr{#6}}%
+    \csedef{allaffilcnt#2}{\applyaffilcountrepr{#6}}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\messageaffiliationcommands}{mm}{%
+    \typeout{Commands for #1 #2:}%
+    \typeout{- Name:}%
+    \typeout{\indy Command:\space\bslash#1#2 or \bslash csuse{#1#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1#2}}%
+    \typeout{- Link:}%
+    \typeout{\indy Command:\space\bslash#1url#2 or \bslash csuse{#1url#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1url#2}}%
+    \typeout{- Address:}%
+    \typeout{\indy Command:\space\bslash#1address#2 or \bslash csuse{#1address#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1address#2}}%
+    \typeout{- Identifier (user):}%
+    \typeout{\indy Command:\space\bslash#1id#2 or \bslash csuse{#1id#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1id#2}}%
+    \typeout{- Identifier (counter):}%
+    \typeout{\indy Command:\space\bslash#1cnt#2 or \bslash csuse{#1cnt#2}}%
+    \typeout{\indy Value:\space\space\space\csuse{#1cnt#2}}%
+    \typeout{}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\addaffiliation}{mmmm}{%
+    % Usage:  \addaffiliation{X}{name}{url}{address}
+    % Action: Creates macros:
+    %         - \affilX
+    %         - \affilurlX
+    %         - \affiladdressX
+    %         - \affilidX
+    %         - \affilcntX
+    %         - \allafilcntX
+    %         Appends "X" to list \affilids
+    \stepcounter{orgcounter}%
+    \addaffiliationcommands{affil}{#1}{#2}{#3}{#4}{\theorgcounter}%
+    \listadd{\affilids}{#1}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\addcompany}{mmmm}{%
+    % Usage:  \addcompany{X}{name}{url}{address}
+    % Action: Creates macros:
+    %         - \companyX
+    %         - \companyurlX
+    %         - \companyaddressX
+    %         - \companyidX
+    %         - \companycntX
+    %         - \allafilcntX
+    %         Appends "X" to list \companyids
+    \stepcounter{orgcounter}%
+    \addaffiliationcommands{company}{#1}{#2}{#3}{#4}{\theorgcounter}%
+    \listadd{\companyids}{#1}%
+}%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printauthor}{sO{email2}m}{%
+    % Print author. The following modes are possible:
+    %    email1:        Maxine Muster, maxine.muster@abc.de
+    %    email2:        Maxine Muster (maxine.muster@abc.de)
+    %    email3:        \href{mailto:maxine.muster@abc.de}{Maxine Muster}
+    %    compact:       Maxine Muster
+    %
+    % \printauthor*{A}         --> print author A without details
+    % \printauthor{B}          --> print author B with details
+    % \printauthor[email1]{C}  --> print author C with mode email1
+    \IfBooleanTF#1{%
+        \csuse{author#3}%
+    }{%
+        \ifdefstring{\authors@affilmode}{verbatim}{%
+            \ifthenelse{\equal{#2}{email3}}{%
+                % affilmode=verbatim and #2=email3
+                \href{mailto:\csuse{authoremail#3}}{\csuse{author#3}}%
+                \textsuperscript{\csuse{authoraffil#3}}
+            }{%
+                % affilmode=verbatim, default
+                \csuse{author#3}\textsuperscript{\csuse{authoraffil#3}}%
+            }%
+        }{}%
+        \ifdefstring{\authors@affilmode}{count}{%
+            \ifthenelse{\equal{#2}{email3}}{%
+                % affilmode=count and #2=email3
+                \href{mailto:\csuse{authoremail#3}}{\csuse{author#3}}%
+                \textsuperscript{\csuse{authoraffil#3}}%
+            }{%
+                % affilmode=count, default
+                \csuse{author#3}\textsuperscript{\splitaffils{\csuse{authoraffil#3}}}%
+            }%
+        }{}%
+        % Details modes:
+        \ifthenelse{\equal{#2}{email1}}{%
+          , \href{mailto:\csuse{authoremail#3}}{\csuse{authoremail#3}}%
+        }{}%
+        \ifthenelse{\equal{#2}{email2}}{%
+          \space(\href{mailto:\csuse{authoremail#3}}{\csuse{authoremail#3}})%
+        }{}%
+        \ifthenelse{\equal{#2}{compact}}{%
+        }{}%
+    }%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printcollaborator}{sO{email2}m}{%
+    % Print collaborator. The following modes are possible:
+    %    email1:   Maxine Muster, maxine.muster@abc.de
+    %    email2:   Maxine Muster (maxine.muster@abc.de)
+    %    email3:        \href{mailto:maxine.muster@abc.de}{Maxine Muster}
+    %    compact:  Maxine Muster
+    %
+    % \printcollaborator*{A}         --> print collaborator A without details
+    % \printcollaborator{B}          --> print collaborator B with details
+    % \printcollaborator[email1]{C}  --> print collaborator C with mode email1
+    \IfBooleanTF#1{%
+        % \printcollaborator*: no details
+        \csuse{collaborator#3}%
+    }{%
+        \ifdefstring{\authors@affilmode}{verbatim}{%
+            \ifthenelse{\equal{#2}{email3}}{%
+                % affilmode=verbatim and #2=email3
+                \href{mailto:\csuse{collaboratoremail#3}}{\csuse{collaborator#3}}%
+                \textsuperscript{\csuse{collaboratoraffil#3}}%
+            }{%
+                % affilmode=verbatim, default
+                \csuse{collaborator#3}\textsuperscript{\csuse{collaboratoraffil#3}}%
+            }%
+        }{}%
+        \ifdefstring{\authors@affilmode}{count}{%
+            \ifthenelse{\equal{#2}{email3}}{%
+                % affilmode=count and #2=email3
+                \href{mailto:\csuse{collaboratoremail#3}}{\csuse{collaborator#3}}%
+                \textsuperscript{\csuse{collaboratoraffil#3}}%
+            }{%
+                % affilmode=count, default
+                \csuse{collaborator#3}\textsuperscript{\splitaffils{\csuse{collaboratoraffil#3}}}%
+            }%
+        }{}%
+        % Details modes:
+        \ifthenelse{\equal{#2}{email1}}{%
+          , \href{mailto:\csuse{collaboratoremail#3}}{\csuse{collaboratoremail#3}}%
+        }{}%
+        \ifthenelse{\equal{#2}{email2}}{%
+          \space(\href{mailto:\csuse{collaboratoremail#3}}{\csuse{collaboratoremail#3}})%
+        }{}%
+        \ifthenelse{\equal{#2}{compact}}{%
+        }{}%
+    }%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printauthors}{sO{, }O{email2}}{%
+  % Delayed execution of list separator
+  % Skip use of separator for the first item
+  % http://tex.stackexchange.com/a/89187/5764
+  \def\listsep{\def\listsep{#2}}%
+  \IfBooleanTF#1{%
+      \renewcommand{\do}[1]{\listsep\printauthor*[#3]{##1}}%
+  }{%
+      \renewcommand{\do}[1]{\listsep\printauthor[#3]{##1}}%
+  }%
+  \dolistloop\authorids%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\messagecommands}{s}{%
+  \typeout{}%
+  \typeout{AUTHOR COMMANDS:}%
+  \renewcommand{\do}[1]{\messagepersoncommands{author}{##1}}%
+  \dolistloop\authorids%
+  \typeout{}%
+  \typeout{COLLABORATOR COMMANDS:}%
+  \renewcommand{\do}[1]{\messagepersoncommands{collaborator}{##1}}%
+  \dolistloop\collaboratorids%
+  \typeout{}%
+  \typeout{AFFILIATION COMMANDS:}%
+  \renewcommand{\do}[1]{\messageaffiliationcommands{affil}{##1}}%
+  \dolistloop\affilids%
+  \typeout{}%
+  \typeout{COMPANY COMMANDS:}%
+  \renewcommand{\do}[1]{\messageaffiliationcommands{company}{##1}}%
+  \dolistloop\companyids%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printcollaborators}{sO{, }O{email2}}{%
+  % Delayed execution of list separator
+  % Skip use of separator for the first item
+  % http://tex.stackexchange.com/a/89187/5764
+  \def\listsep{\def\listsep{#2}}%
+  \IfBooleanTF#1{%
+      \renewcommand{\do}[1]{\listsep\printcollaborator*[#3]{##1}}%
+  }{%
+      \renewcommand{\do}[1]{\listsep\printcollaborator[#3]{##1}}%
+  }%
+  \dolistloop\collaboratorids%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printaffiliation}{m}{%
+    \ifdefstring{\authors@affilmode}{verbatim}{%
+        \ifthenelse { \equal {\csuse{affilurl#1}} {} }%
+            {\textsuperscript{\csuse{affilid#1}}\csuse{affil#1}}%
+            {\href{\csuse{affilurl#1}}{\textsuperscript{\csuse{affilid#1}}\csuse{affil#1}}}%
+    }{}%
+    \ifdefstring{\authors@affilmode}{count}{%
+        \ifthenelse { \equal {\csuse{affilurl#1}} {} }%
+            {\textsuperscript{\csuse{affilcnt#1}}\csuse{affil#1}}%
+            {\href{\csuse{affilurl#1}}{\textsuperscript{\csuse{affilcnt#1}}\csuse{affil#1}}}%
+    }{}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printcompany}{m}{%
+    \ifdefstring{\authors@affilmode}{verbatim}{%
+        \ifthenelse { \equal {\csuse{companyurl#1}} {} }%
+            {\textsuperscript{\csuse{companyid#1}}\csuse{company#1}}%
+            {\href{\csuse{companyurl#1}}{\textsuperscript{\csuse{companyid#1}}\csuse{company#1}}}%
+    }{}%
+    \ifdefstring{\authors@affilmode}{count}{%
+        \ifthenelse { \equal {\csuse{companyurl#1}} {} }%
+            {\textsuperscript{\csuse{companycnt#1}}\csuse{company#1}}%
+            {\href{\csuse{companyurl#1}}{\textsuperscript{\csuse{companycnt#1}}\csuse{company#1}}}%
+    }{}%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printaffiliations}{O{, }}{%
+  % Delayed execution of list separator
+  % Skip use of separator for the first item
+  % http://tex.stackexchange.com/a/89187/5764
+  \def\listsep{\def\listsep{#1}}%
+  \renewcommand{\do}[1]{\listsep\printaffiliation{##1}}%
+  \dolistloop\affilids%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\printcompanies}{O{, }}{%
+  % Delayed execution of list separator
+  % Skip use of separator for the first item
+  % http://tex.stackexchange.com/a/89187/5764
+  \def\listsep{\def\listsep{#1}}%
+  \renewcommand{\do}[1]{\listsep\printcompany{##1}}%
+  \dolistloop\companyids%
+}%
+
