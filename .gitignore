@@ -1,3 +1,8 @@
+# exepted folders
+documents/
+notes/
+sources/
+
 # VS code 
 *.code-workspace
 
