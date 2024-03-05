@@ -60,9 +60,16 @@
 \include{front/imprint}
 
 %----------------------------------------------------------------------------------------
+% handeling page numbering
+%----------------------------------------------------------------------------------------
+\clearpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+%----------------------------------------------------------------------------------------
 % ABSTRACT
 %----------------------------------------------------------------------------------------
-%\include{abstract}
+\include{front/abstract}
 
 %----------------------------------------------------------------------------------------
 % LIST OF CONTENTS/FIGURES/TABLES PAGES
@@ -76,11 +83,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % THESIS CONTENT - CHAPTERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+% handeling page numbering
+%----------------------------------------------------------------------------------------
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
 %\mainmatter                     % Begin numeric (1,2,3...) page numbering
 %\pagestyle{reportStyle}              % Reset the page headers
 \include{sections/section1}
 \include{sections/section2}
 \include{sections/section3}
+\include{sections/section4}
 
 \appendix
 \include{sections/sectionA}

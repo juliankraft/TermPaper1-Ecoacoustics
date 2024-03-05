@@ -35,7 +35,9 @@
 
 \newcommand{\boldit}[1]{\textit{\textbf{#1}}}
 
-%\usepackage[scaled]{helvet}
+% Set Helvetica as the default font
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Colors
@@ -54,6 +56,8 @@
 % Colors related to tables
 \definecolor{tablegray}{rgb}{0.9,0.9,0.9}
 \colorlet{tableheader}{tablegray}
+% Colors related to hyperref
+\definecolor{linkcolor}{rgb}{0.1, 0.1, 0.1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Environments
@@ -61,7 +65,14 @@
 
 \usepackage[ngerman]{babel}    % Language support
 
-\usepackage{hyperref}          % Create hypertext links
+\usepackage[                    % Create hypertext links
+    colorlinks=true, 
+    allbordercolors={white}, 
+    linkcolor=linkcolor, 
+    citecolor=linkcolor, 
+    filecolor=linkcolor, 
+    urlcolor=linkcolor]{hyperref}
+
 \usepackage{graphicx}          % Include graphics
 \usepackage{tabularx}          % Create nicer tables
 \usepackage{booktabs}          % To further beautify tables
@@ -168,12 +179,13 @@
 \usepackage[
     backend=biber,             % Use biber backend (an external tool)
     sorting=none,              % Enumerates the reference in order of their appearance
-    style=numeric-comp         % Choose here your preferred citation style
+    style=authoryear           % Choose here your preferred citation style
 ]{biblatex}
-\addbibresource{references.bib} % The filename of the bibliography
+\addbibresource{bibliography.bib} % The filename of the bibliography
 \usepackage[autostyle=true]{csquotes} 
                                % Required to generate language-dependent quotes 
                                % in the bibliography
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MARGIN SETTINGS
@@ -235,6 +247,7 @@
 %----------------------------------------------------------------------------------------
 %   HEADERS AND FOOTERS
 %----------------------------------------------------------------------------------------
+
 % Notes:
 % - In twoside mode, left and right side pages may differ
 % - Pages: left = even, right = odd
@@ -254,9 +267,10 @@
 \providepairofpagestyles{basicStyle}{
     % Header specs for style basicStyle
     \clearpairofpagestyles%
-    \automark[section]{section}
-    \ihead{\headmark}% Inner header
-    \ohead[\pagemark]{\pagemark}% Outer header
+    % \automark[section]{section}
+    % \ihead{\headmark}% Inner header
+    % \ohead[\pagemark]{\pagemark}% Outer header
+    \cfoot[\pagemark]{\pagemark}% Footer with pagemark in the middle
 }
 \pagestyle{basicStyle}
 
@@ -264,9 +278,11 @@
     \automark*[subsection]{}% Override right marks with section title once one is set
                          % Otherwise, use the chapter title -> basicStyle
 }
-\pagestyle{reportStyle}
+% \pagestyle{reportStyle}
 
-\KOMAoption{headsepline}{true}
+\KOMAoption{headsepline}{false} % set true to get a line below the header
+
+
 
 
 
