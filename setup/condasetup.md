@@ -1,6 +1,6 @@
 conda create --name torch_cuda python=3.11 matplotlib numpy scikit-learn pandas jupyterlab lightning pytorch torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
 
-conda create --name torch_cuda python=3.11 matplotlib numpy scikit-learn pandas jupyterlab pytorch-lightning pytorch torchaudio cudatoolkit=11.8 -c pytorch
+conda create --name torch_cuda python=3.11 matplotlib numpy scikit-learn pandas jupyterlab lightning pytorch torchaudio cudatoolkit=11.8 -c pytorch
 
 
 ### conda create command with cuda toolkit
