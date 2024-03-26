@@ -39,17 +39,16 @@ class InsectData(Dataset):
             max_length = df['file_length'].max()
             self.min_len_in_seconds = max_length
             self.max_len_in_seconds = max_length
-
         else:
             self.min_len_in_seconds = min_len_in_seconds
             self.max_len_in_seconds = max_len_in_seconds
 
     def get_random_part_padded(self, waveform: Tensor, samplerate: int) -> Tensor:
 
-        min_len_in_samles = int(self.min_len_in_seconds * samplerate)
-        max_len_in_samles = int(self.max_len_in_seconds * samplerate)
+        min_len_in_samples = int(self.min_len_in_seconds * samplerate)
+        max_len_in_samples = int(self.max_len_in_seconds * samplerate)
 
-        part_length = np.random.randint(min_len_in_samles, max_len_in_samles + 1)
+        part_length = np.random.randint(min_len_in_samples, max_len_in_samples + 1)
         sample_length = waveform.shape[1]
 
         part_length = min(part_length, sample_length)
@@ -57,40 +56,27 @@ class InsectData(Dataset):
         sample_start_index = np.random.randint(0, sample_length - part_length + 1)
         sample_end_index = sample_start_index + part_length
 
-        pad_length = max_len_in_samles - part_length
-
         waveform_part = waveform[:, sample_start_index:sample_end_index]
+
+        actual_part_length = waveform_part.shape[1]
+        pad_length = max_len_in_samples - actual_part_length
+
         waveform_pad = torch.nn.functional.pad(waveform_part, pad=(pad_length, 0, 0, 0))
 
         return waveform_pad
 
     def get_metadata(self) -> pd.DataFrame:
-        # create lists to append data into
-        self.wlen = []
-        self.classes = []
-        self.species = []
-        self.family = []
-        self.data_set = []
-        self.path = []
 
-        for i in range(len(self)):
-            self.__getitem__(idx=i, gather_metadata=True)
+        all_metadata = []
 
-        meta_data = pd.DataFrame({
-            'family': self.family,
-            'species': self.species,
-            'class_id': self.classes,
-            'data_set': self.data_set,
-            'file_length': self.wlen,
-            'path': self.path
-        })
+        for idx in range(len(self.data)):
+            _, _, _, metadata = self.get_single_sample(idx=idx)
 
-        return meta_data
+            all_metadata.append(metadata)
 
-    def __len__(self) -> int:
-        return len(self.data)
+        return pd.DataFrame(all_metadata)
 
-    def __getitem__(self, idx: int, gather_metadata: bool = False) -> tuple[Tensor, Tensor]:
+    def get_single_sample(self, idx: int):
         sample_meta = self.data.iloc[idx]
         data_path = sample_meta.data_path
         species = sample_meta.species
@@ -105,16 +91,27 @@ class InsectData(Dataset):
                 f'file not found: \'{path}\'.'
             )
 
-        waveform, samplerate = self.load_sample(path) # saves the wave and the frequency in two variable
+        waveform, samplerate = self.load_sample(path)
 
-        # method to append data into the lists
-        if gather_metadata:
-            self.wlen.append(waveform.shape[-1] / samplerate) # Tool to check trough the Wavefiles and mapping their length
-            self.classes.append(class_id)
-            self.species.append(species)
-            self.family.append(data_path.split('/')[-1])
-            self.data_set.append(data_set)
-            self.path.append(path)
+        metadata = {
+            'family': file_name,
+            'species': species,
+            'class_id': class_id,
+            'data_set': data_set,
+            'file_length': waveform.shape[-1] / samplerate,
+            'path': path
+        }
+
+        return waveform, samplerate, class_id, metadata
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __getitem__(self, idx: int) -> tuple[Tensor, Tensor]:
+        
+        waveform, samplerate, class_id, _ = self.get_single_sample(idx=idx)
+
+        waveform = self.get_random_part_padded(waveform=waveform, samplerate=samplerate)
 
         spectrogram: Tensor = self.transform(waveform[0, :]) 
 
