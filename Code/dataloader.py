@@ -137,13 +137,17 @@ class InsectDatamodule(pl.LightningDataModule):
             batch_size: int = 8,
             train_min_len_in_seconds: int = 1,
             train_max_len_in_seconds: int = 10,
-            eval_max_len_in_seconds: int = 50):
+            eval_max_len_in_seconds: int = 5,
+            use_mel: bool = False,
+            num_workers: int = 0):
         super().__init__()
 
         self.batch_size = batch_size
         self.train_min_len_in_seconds = train_min_len_in_seconds
         self.train_max_len_in_seconds = train_max_len_in_seconds
         self.eval_max_len_in_seconds = eval_max_len_in_seconds
+
+        self.num_workers = num_workers
 
         csv_paths = [csv_paths] if isinstance(csv_paths, str) else csv_paths # if there is only one csv path passed, it creates a list
 
@@ -173,7 +177,10 @@ class InsectDatamodule(pl.LightningDataModule):
 
         self.csv = csv
 
-        self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length)
+        if use_mel:
+            self.transform = torchaudio.transforms.MelSpectrogram(n_fft=n_fft, hop_length=hop_length)
+        else:
+            self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length)
 
     def train_dataloader(self) -> TRAIN_DATALOADERS: # Defines how the Train Dataloader is built
 
@@ -187,7 +194,7 @@ class InsectDatamodule(pl.LightningDataModule):
             max_len_in_seconds=self.train_max_len_in_seconds,
         )
 
-        return DataLoader(data_set, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(data_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def val_dataloader(self) -> EVAL_DATALOADERS: # Defines how the Validation Dataloader is built
 
@@ -201,7 +208,7 @@ class InsectDatamodule(pl.LightningDataModule):
             max_len_in_seconds=self.eval_max_len_in_seconds
         )
 
-        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False)
+        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def test_dataloader(self) -> EVAL_DATALOADERS: # Defines how the Test Dataloader is built
 
@@ -215,7 +222,7 @@ class InsectDatamodule(pl.LightningDataModule):
             max_len_in_seconds=self.eval_max_len_in_seconds
         )
 
-        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False)
+        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def predict_dataloader(self) -> EVAL_DATALOADERS: # Defines a Dataloader with all the Data
 
@@ -229,4 +236,4 @@ class InsectDatamodule(pl.LightningDataModule):
             max_len_in_seconds=self.eval_max_len_in_seconds
         )
 
-        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False)
+        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
