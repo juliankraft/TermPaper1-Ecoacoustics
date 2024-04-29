@@ -63,7 +63,8 @@
 % Environments
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage[ngerman]{babel}    % Language support
+% \usepackage[ngerman]{babel}    % Language support
+\usepackage[english]{babel}    % Language support
 
 \usepackage[                    % Create hypertext links
     colorlinks=true, 
@@ -175,11 +176,16 @@
 % References
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Set up references
 \usepackage[
     backend=biber,             % Use biber backend (an external tool)
     sorting=none,              % Enumerates the reference in order of their appearance
-    style=authoryear           % Choose here your preferred citation style
+    style=authoryear,          % Choose here your preferred citation style
+    maxcitenames=1,            % Use "et al." for more than one author in text citations
+    maxbibnames=999,           % List all authors in the bibliography
+    giveninits=true,           % Abbreviate first names to initials
+    useprefix=true,            % List all authors with last name first
+    uniquename=false,          % Avoids creating unique author lists
+    uniquelist=false           % Avoids creating unique author lists
 ]{biblatex}
 \addbibresource{SA1.bib} % The filename of the bibliography
 \usepackage[autostyle=true]{csquotes} 

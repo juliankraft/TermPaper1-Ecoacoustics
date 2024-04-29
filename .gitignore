@@ -1,3 +1,7 @@
+# torch files
+*.pkl
+*.pth
+
 # exepted folders
 documents/
 notes/
