@@ -1,8 +1,8 @@
 # torch files
 *.pkl
-*.pth
 
 # exepted folders
+Code/learning/
 documents/
 notes/
 sources/
