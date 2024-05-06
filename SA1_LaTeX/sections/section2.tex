@@ -8,13 +8,26 @@
 \section{Materials and Methods}
 \label{section2}
 
+\subsection{Programming Language and Frameworks}
+To build and train the deep learning model, the programming language Python was used.
+The Frameworks PyTorch, Lightning are very popular and powerful tools for building deep learning models.
+
 \subsection{Data Processing}
+To load and process the the data on the fly, a custom data loader was implemented. 
+The data loader reads the audio files and their corresponding labels from the dataset 
+and applies the necessary transformations to the audio files.
 
-\subsubsection{handling sample size}
+\subsubsection{Sample Size}
+The audio files are of different lengths. In order to avoid the model being biased towards 
+the length of the audio files, the audio files are sampled to a fixed length. Since there is
+files below the fixed length, the audio files are padded with zeros, it seems not enough to 
+just sample the files and pad them if needed. This would allow bias to be introduced because
+of the padding. To avoid this, the audio files are sampled to a random length between 1 and 5
+seconds and then padded with zeros to the fixed length of 5 seconds.
 
-
-\subsubsection{data transformation}
-
+\subsubsection{Transformation}
+Before the audio files are fed into the model, they are transformed into a mel-spectrogram.
+A mel-spectrogram is a visual representation of the spectrum of a sound signal. 
 
 
 \subsection{Deep Learning Model}
