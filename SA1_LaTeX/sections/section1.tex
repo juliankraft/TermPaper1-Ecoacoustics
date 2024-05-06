@@ -12,19 +12,19 @@
 
 The question about biodiversity and its importance has been a topic of interest for many years. 
 The term biodiversity is a contraction of biological diversity, which refers to the variety and variability of life forms on Earth.
-In recent years, a massive decline in biodiversity has been observed, which is mainly due to human activities.
-The loss of biodiversity is a major concern because it can have a significant impact on the ecosystem and the services it provides.
+In recent years, a massive decline in biodiversity has been observed, which is mainly due to human activities. 
+The loss of biodiversity is a major concern because it can have a significant impact on the ecosystem and the services it provides \autocite{brondizioGlobalAssessmentReport2019}. 
 In order to quantify biodiversity and monitor its changes, it is essential to have a reliable and efficient method for measuring biodiversity.
-
 Traditional methods for measuring biodiversity are time-consuming and expensive, and they are not suitable for large-scale monitoring.
 But what if there was a non invasive method that could be used to monitor biodiversity in a fast and efficient way?
-Ecoacoustics might just be a possible solution to this problem. Recent developments in the field of ecoaucustics have
-shown that it is possible to use sound recordings to monitor biodiversity in a non-invasive way. This method is known as 
-acoustic biodiversity monitoring. It is very cost effective since it does not need experts to actually go to the field and
-find and document the species. Instead a regular microphone can be used to record the sounds of the environment and theoretically
-a regular computer might just provide enough calculating power to analyze the recordings and provide a report on the biodiversity.
-In this paper an attempt in this direction is made. The goal is to use an existing dataset of insect sounds and try to create a model
-in order to classify the sounds and identify the species.
+Ecoacoustics might deliver a promising solution to this problem even tough there remain some issues to be fixed \autocite{scarpelliMultiIndexEcoacousticsAnalysis2021}.  
+Passive acoustic monitoring (PAM) like the using of sound recordings to monitor biodiversity are currently widely researched
+and developed and even combined with modern artificial intelligence (AI) methods \autocite{dengHarnessingPowerSound2023}.
+
+The focus of this study is to reproduce the results of the paper \autocite{faissInsectSet32DatasetAutomatic2022} and to create a model 
+that can classify the insect sounds with a high accuracy. Furthermore the model will be tested and evaluated for its performance and
+accuracy. The results will be discussed and compared to the results of the original paper. The goal is to prof that this technology
+could be accessible for everyone with the knowledge and a regular gaming computer with a graphic processing unit (GPU).
 
 \subsection{Insects of Interest}
 There are countless species of insects in the world, and many of them produce sounds for various reasons.
@@ -54,10 +54,8 @@ Between species, the number of files ranges from four to 22 files and the length
 The files range in length from less than one second to several minutes. 
 All original files were available with sample rates of at least 44.1 kHz or higher but were resampled to 44.1 kHz mono WAV files for consistency.
 
-The files are already split into training, validation and test sets. And there are two .csv files that contains
+The files are split into training, validation and test sets. And there are two .csv files containing
 the labels and the filenames of the recordings.
 
-
-\subsection{Research Question}
 
 

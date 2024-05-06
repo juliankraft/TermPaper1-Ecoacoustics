@@ -2,9 +2,9 @@
 *.pkl
 
 # exepted folders
-Code/lightning_logs/
-Code/model_data/
-Code/learning/
+code/lightning_logs/
+code/model_data/
+code/learning/
 documents/
 notes/
 sources/
@@ -23,8 +23,9 @@ sources/
 *.lof
 *.lot
 
-# PDF output - usually a bad idea to keep this in Git
-main.pdf
+# PDF output - only the main file
+*.pdf
+!main.pdf
 
 ## Intermediate documents:
 *.dvi
