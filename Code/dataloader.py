@@ -178,7 +178,8 @@ class InsectDatamodule(pl.LightningDataModule):
 
         self.csv = csv
 
-        self.transform = torchaudio.transforms.MelSpectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length, n_mels=n_mels)
+        # self.transform = torchaudio.transforms.MelSpectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length, n_mels=n_mels)
+        self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length)
 
 
     def train_dataloader(self) -> TRAIN_DATALOADERS: # Defines how the Train Dataloader is built
