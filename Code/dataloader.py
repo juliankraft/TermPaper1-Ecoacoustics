@@ -22,7 +22,7 @@ class InsectData(Dataset):
             self,
             data: pd.DataFrame,
             transform: torch.nn.Module,
-            num_classes: int,
+            class_ids: list[int],
             min_len_in_seconds: int = 1,
             max_len_in_seconds: int = 5):
         """
@@ -32,7 +32,8 @@ class InsectData(Dataset):
 
         self.data = data
         self.transform = transform
-        self.num_classes = num_classes
+        self.class_mapping = {cl: i for i, cl in enumerate(class_ids)}
+        self.num_classes = len(self.class_mapping)
 
         if min_len_in_seconds == -1:
             df = self.get_metadata()
@@ -111,9 +112,13 @@ class InsectData(Dataset):
         
         waveform, samplerate, class_id, _ = self.get_single_sample(idx=idx)
 
+        class_id = self.class_mapping[class_id]
+
         waveform = self.get_random_part_padded(waveform=waveform, samplerate=samplerate)
 
         spectrogram: Tensor = self.transform(waveform[0, :]) 
+
+        spectrogram = (spectrogram + 40) / 40
 
         species_one_hot: Tensor = torch.nn.functional.one_hot(
             torch.as_tensor(class_id, dtype=torch.long),
@@ -135,6 +140,7 @@ class InsectDatamodule(pl.LightningDataModule):
             n_fft: int = 256,
             win_length: int | None = None,
             hop_length: int = 128,
+            top_db: int = 80,
             n_mels: int = 128,
             batch_size: int = 8,
             train_min_len_in_seconds: int = 1,
@@ -177,63 +183,70 @@ class InsectDatamodule(pl.LightningDataModule):
             )
 
         self.csv = csv
+        self.sample_rate = 44100
 
-        # self.transform = torchaudio.transforms.MelSpectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length, n_mels=n_mels)
-        self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length)
+        mel_transform = torchaudio.transforms.MelSpectrogram(
+            n_fft=n_fft,
+            hop_length=hop_length,
+            win_length=win_length,
+            n_mels=n_mels,
+            f_max=self.sample_rate / 2)
 
+        db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
+        self.transform = torch.nn.Sequential(mel_transform, db_transform)
+        # self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length)
 
-    def train_dataloader(self) -> TRAIN_DATALOADERS: # Defines how the Train Dataloader is built
+        train_data = self.get_data(training_mode='train')
+        train_meta = train_data.get_metadata()
+        class_ids, class_count = np.unique(train_meta.class_id, return_counts=True)
+        self.class_weights = class_count.sum() / (class_count * class_count.sum())
 
-        csv = self.csv[self.csv.data_set == 'train']
+    def get_data(self, training_mode: str) -> InsectData:
+        if training_mode == 'train':
+            min_len_in_seconds = self.train_min_len_in_seconds
+            max_len_in_seconds = self.train_max_len_in_seconds
+        elif training_mode in ['validation', 'test', 'predict']:
+            min_len_in_seconds = -1
+            max_len_in_seconds = self.eval_max_len_in_seconds
+        else:
+            raise ValueError('training_mode must be one of: train, validation, test, predict')
+
+        if training_mode == 'predict':
+            csv = self.csv
+        else:
+            csv = self.csv[self.csv.data_set == training_mode]
 
         data_set = InsectData(
             data=csv,
             transform=self.transform,
-            num_classes=self.num_classes,
-            min_len_in_seconds=self.train_min_len_in_seconds,
-            max_len_in_seconds=self.train_max_len_in_seconds,
+            class_ids=self.class_IDs,
+            min_len_in_seconds=min_len_in_seconds,
+            max_len_in_seconds=max_len_in_seconds,
         )
+
+        return data_set
+
+    def train_dataloader(self) -> TRAIN_DATALOADERS: # Defines how the Train Dataloader is built
+
+        data_set = self.get_data(training_mode='train')
 
         return DataLoader(data_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def val_dataloader(self) -> EVAL_DATALOADERS: # Defines how the Validation Dataloader is built
 
-        csv = self.csv[self.csv.data_set == 'validation']
-
-        data_set = InsectData(
-            data=csv,
-            transform=self.transform,
-            num_classes=self.num_classes,
-            min_len_in_seconds=-1,
-            max_len_in_seconds=self.eval_max_len_in_seconds
-        )
+        data_set = self.get_data(training_mode='validation')
 
         return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def test_dataloader(self) -> EVAL_DATALOADERS: # Defines how the Test Dataloader is built
 
-        csv = self.csv[self.csv.data_set == 'test']
-
-        data_set = InsectData(
-            data=csv,
-            transform=self.transform,
-            num_classes=self.num_classes,
-            min_len_in_seconds=-1,
-            max_len_in_seconds=self.eval_max_len_in_seconds
-        )
+        data_set = self.get_data(training_mode='test')
 
         return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def predict_dataloader(self) -> EVAL_DATALOADERS: # Defines a Dataloader with all the Data
 
         csv = self.csv
-
-        data_set = InsectData(
-            data=csv,
-            transform=self.transform,
-            num_classes=self.num_classes,
-            min_len_in_seconds=-1,
-            max_len_in_seconds=self.eval_max_len_in_seconds
-        )
+        data_set = self.get_data(training_mode='test')
 
         return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
