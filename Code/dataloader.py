@@ -118,7 +118,7 @@ class InsectData(Dataset):
 
         spectrogram: Tensor = self.transform(waveform[0, :]) 
 
-        spectrogram = (spectrogram + 40) / 40
+        # spectrogram = (spectrogram + 40) / 40 # Normalize the spectrogram (moved to self.transform)
 
         species_one_hot: Tensor = torch.nn.functional.one_hot(
             torch.as_tensor(class_id, dtype=torch.long),
@@ -185,6 +185,14 @@ class InsectDatamodule(pl.LightningDataModule):
         self.csv = csv
         self.sample_rate = 44100
 
+        # defining the steps for the transformation
+
+        class NormalizeSpectrogram(torch.nn.Module):
+            def forward(self, spectrogram):
+                return (spectrogram + 40) / 40
+        
+        normalize_transform = NormalizeSpectrogram()
+    
         mel_transform = torchaudio.transforms.MelSpectrogram(
             n_fft=n_fft,
             hop_length=hop_length,
@@ -193,8 +201,12 @@ class InsectDatamodule(pl.LightningDataModule):
             f_max=self.sample_rate / 2)
 
         db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
-        self.transform = torch.nn.Sequential(mel_transform, db_transform)
-        # self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length)
+
+        # spec_transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length)
+        
+        # setting up the transformation
+        self.transform = torch.nn.Sequential(mel_transform, db_transform, normalize_transform)
+        
 
         train_data = self.get_data(training_mode='train')
         train_meta = train_data.get_metadata()
