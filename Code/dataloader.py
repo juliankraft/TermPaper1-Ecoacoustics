@@ -138,7 +138,7 @@ class InsectDatamodule(pl.LightningDataModule):
             self,
             csv_paths: list[str] | str,
             n_fft: int = 256,
-            top_db: int = 80,
+            top_db: int | None = None,
             n_mels: int | None = None,
             batch_size: int = 8,
             train_min_len_in_seconds: int = 1,
