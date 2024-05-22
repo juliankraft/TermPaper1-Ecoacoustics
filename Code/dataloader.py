@@ -138,10 +138,8 @@ class InsectDatamodule(pl.LightningDataModule):
             self,
             csv_paths: list[str] | str,
             n_fft: int = 256,
-            win_length: int | None = None,
-            hop_length: int = 128,
             top_db: int = 80,
-            n_mels: int = 128,
+            n_mels: int | None = None,
             batch_size: int = 8,
             train_min_len_in_seconds: int = 1,
             train_max_len_in_seconds: int = 10,
@@ -188,24 +186,28 @@ class InsectDatamodule(pl.LightningDataModule):
         # defining the steps for the transformation
 
         class NormalizeSpectrogram(torch.nn.Module):
-            def forward(self, spectrogram):
-                return (spectrogram + 40) / 40
+            def forward(self, tensor):
+                return (tensor - tensor.min()) / (tensor.max() - tensor.min())
         
         normalize_transform = NormalizeSpectrogram()
     
-        mel_transform = torchaudio.transforms.MelSpectrogram(
-            n_fft=n_fft,
-            hop_length=hop_length,
-            win_length=win_length,
-            n_mels=n_mels,
-            f_max=self.sample_rate / 2)
+        if n_mels is None:
+            spectogram = torchaudio.transforms.Spectrogram(n_fft=n_fft, 
+                                                           hop_length=int(n_fft/2), 
+                                                           win_length=n_fft)
+        else:
+            spectogram = torchaudio.transforms.MelSpectrogram(
+                n_fft=n_fft,
+                hop_length=int(n_fft/2),
+                win_length=n_fft,
+                n_mels=n_mels,
+                f_max=self.sample_rate / 2)
+                
 
         db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
 
-        # spec_transform = torchaudio.transforms.Spectrogram(n_fft=n_fft, hop_length=hop_length, win_length=win_length)
-        
         # setting up the transformation
-        self.transform = torch.nn.Sequential(mel_transform, db_transform, normalize_transform)
+        self.transform = torch.nn.Sequential(spectogram, db_transform, normalize_transform)
         
 
         train_data = self.get_data(training_mode='train')
