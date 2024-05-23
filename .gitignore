@@ -3,7 +3,7 @@
 
 # exepted folders
 code/figures/
-code/lightning_logs/
+# code/lightning_logs/
 code/model_data/
 code/learning/
 documents/
