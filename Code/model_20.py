@@ -154,6 +154,13 @@ class ResNet(LightningModule):
         self.log_dict({'test_loss': loss, 'test_acc': self.accuracy(y_hat, y)})
 
         return loss
+    
+    def predict_step(self, batch, batch_idx):
+        x, y = batch
 
+        y_hat = self(x)
+
+        return y, y_hat
+        
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate, weight_decay=0.0)

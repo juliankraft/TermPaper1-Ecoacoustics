@@ -260,7 +260,6 @@ class InsectDatamodule(pl.LightningDataModule):
 
     def predict_dataloader(self) -> EVAL_DATALOADERS: # Defines a Dataloader with all the Data
 
-        csv = self.csv
-        data_set = self.get_data(training_mode='test')
+        data_set = self.get_data(training_mode='predict')
 
         return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
