@@ -26,7 +26,7 @@ class ResBlock(torch.nn.Module):
 
 
 class ResNet(LightningModule):
-    def __init__(
+    def _init_(
             self,
             in_channels: int,
             base_channels: int,
@@ -37,7 +37,7 @@ class ResNet(LightningModule):
             learning_rate: float = 0.001,
             class_weights: list[float] | None = None,
             **kwargs):
-        super().__init__()
+        super()._init_()
 
         self.save_hyperparameters()
 
@@ -50,23 +50,23 @@ class ResNet(LightningModule):
 
         # Create a sequence of residual blocks with increasing depth (channel size).
         resnet_layers = []
-        out_channels = base_channels
-        in_channels = out_channels
+        current_out_channels = base_channels
+        current_in_channels = current_out_channels
         for depth in range(n_res_blocks):
-            out_channels *= 2
+            current_out_channels *= 2
             n_max_pool = n_max_pool if depth % 2 == 0 else 1
             resnet_layers.append(ResBlock(
-                in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, n_max_pool=n_max_pool, **kwargs)
+                in_channels=current_in_channels, out_channels=current_out_channels, kernel_size=kernel_size, n_max_pool=n_max_pool, **kwargs)
             )
 
-            in_channels = out_channels
+            current_in_channels = current_out_channels
 
         self.res_blocks = torch.nn.Sequential(
             *resnet_layers
         )
 
         self.avgpool = torch.nn.AdaptiveAvgPool2d((1, 1))
-        self.convout = torch.nn.Conv2d(in_channels=out_channels, out_channels=num_classes, kernel_size=1, **kwargs)
+        self.convout = torch.nn.Conv2d(in_channels=current_out_channels, out_channels=num_classes, kernel_size=1, **kwargs)
 
         self.softmax = torch.nn.Softmax(dim=1)
 
