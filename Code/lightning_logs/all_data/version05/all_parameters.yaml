@@ -1,0 +1,16 @@
+base_channels: 8
+batch_size: 10
+csv_paths:
+- ../data/Cicadidae.csv
+- ../data/Orthoptera.csv
+in_channels: 1
+kernel_size: 3
+learning_rate: 0.001
+log_every_n_steps: 20
+n_fft: 1024
+n_max_pool: 3
+n_mels: null
+n_res_blocks: 4
+num_workers: 0
+patience: 30
+top_db: null
