@@ -77,8 +77,6 @@ class ResNet(LightningModule):
 
         self.cross_entropy_loss_fn = torch.nn.CrossEntropyLoss(weight=class_weights)
 
-        self.save_hyperparameters()
-
     def forward(self, x):
         # x: (N, C=1, H, W)
         x = x.unsqueeze(1)
