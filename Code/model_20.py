@@ -39,6 +39,8 @@ class ResNet(LightningModule):
             **kwargs):
         super().__init__()
 
+        self.save_hyperparameters()
+
         self.learning_rate = learning_rate
         self.class_weights = class_weights
 
