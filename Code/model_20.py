@@ -26,7 +26,7 @@ class ResBlock(torch.nn.Module):
 
 
 class ResNet(LightningModule):
-    def _init_(
+    def __init__(
             self,
             in_channels: int,
             base_channels: int,
@@ -37,7 +37,7 @@ class ResNet(LightningModule):
             learning_rate: float = 0.001,
             class_weights: list[float] | None = None,
             **kwargs):
-        super()._init_()
+        super().__init__()
 
         self.save_hyperparameters()
 
