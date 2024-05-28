@@ -113,7 +113,7 @@ class ResNet(LightningModule):
     def training_step(self, batch, batch_idx):
         # training_step defines the train loop.
         # it is independent of forward
-        x, y = batch
+        x, y, _ = batch
 
         y_hat = self(x)
 
@@ -130,7 +130,7 @@ class ResNet(LightningModule):
     def validation_step(self, batch, batch_idx):
         # validation_step defines the validation loop.
         # it is independent of forward
-        x, y = batch
+        x, y, _ = batch
 
         y_hat = self(x)
 
@@ -144,7 +144,7 @@ class ResNet(LightningModule):
     def test_step(self, batch, batch_idx):
         # test_step defines the test loop.
         # it is independent of forward
-        x, y = batch
+        x, y, _ = batch
 
         y_hat = self(x)
 
@@ -156,11 +156,13 @@ class ResNet(LightningModule):
         return loss
     
     def predict_step(self, batch, batch_idx):
-        x, y = batch
+        x, _, idx = batch
 
-        y_hat = self(x)
+        y_hat = self(x).detach().cpu().numpy()
 
-        return y, y_hat
+        # print(y_hat.shape)
+
+        return {'y_hat': y_hat, 'idx': idx}
         
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate, weight_decay=0.0)

@@ -108,7 +108,7 @@ class InsectData(Dataset):
     def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, idx: int) -> tuple[Tensor, Tensor]:
+    def __getitem__(self, idx: int) -> tuple[Tensor, Tensor, int]:
         
         waveform, samplerate, class_id, _ = self.get_single_sample(idx=idx)
 
@@ -124,7 +124,7 @@ class InsectData(Dataset):
             torch.as_tensor(class_id, dtype=torch.long),
             num_classes=self.num_classes)
 
-        return spectrogram, species_one_hot
+        return spectrogram, species_one_hot, idx
 
     @staticmethod
     def load_sample(path: str) -> tuple[Tensor, int]:
@@ -260,6 +260,6 @@ class InsectDatamodule(pl.LightningDataModule):
 
     def predict_dataloader(self) -> EVAL_DATALOADERS: # Defines a Dataloader with all the Data
 
-        data_set = self.get_data(training_mode='predict')
+        data_set = self.get_data(training_mode='test')
 
-        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
+        return DataLoader(data_set, batch_size=1, shuffle=False, num_workers=self.num_workers)
