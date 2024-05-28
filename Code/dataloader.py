@@ -272,4 +272,4 @@ class InsectDatamodule(pl.LightningDataModule):
 
         data_set = self.get_data(training_mode='predict')
 
-        return DataLoader(data_set, batch_size=1, shuffle=False, num_workers=self.num_workers)
+        return DataLoader(data_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
