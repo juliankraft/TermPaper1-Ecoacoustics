@@ -2,7 +2,7 @@
 *.pkl
 
 # exepted folders
-logs
+logs/
 code/figures/
 # code/lightning_logs/
 code/model_data/
