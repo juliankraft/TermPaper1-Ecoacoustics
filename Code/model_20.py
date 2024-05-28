@@ -4,7 +4,6 @@ from lightning import LightningModule
 class ResBlock(torch.nn.Module):
     def __init__(self, in_channels: int, out_channels: int, kernel_size: int, n_max_pool: int, **kwargs):
         super().__init__()
-        padding = kernel_size // 2
 
         self.conv1 = torch.nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding='same', **kwargs)
         self.batchnorm1 = torch.nn.BatchNorm2d(num_features=out_channels)
@@ -154,15 +153,15 @@ class ResNet(LightningModule):
         self.log_dict({'test_loss': loss, 'test_acc': self.accuracy(y_hat, y)})
 
         return loss
-    
+
     def predict_step(self, batch, batch_idx):
         x, _, idx = batch
 
         y_hat = self(x).detach().cpu().numpy()
 
-        # print(y_hat.shape)
+        del x
 
         return {'y_hat': y_hat, 'idx': idx}
-        
+
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate, weight_decay=0.0)
