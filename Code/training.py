@@ -130,7 +130,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', type=int, default=0, help='Number of workers for data loading')
 
     parser.add_argument('--n_fft', type=int, default=1024, help='Number of FFT components')
-    parser.add_argument('--n_mels', type=int, default=None, help='Number of Mel bands')
+    parser.add_argument('--n_mels', type=int, default=-1, help='Number of Mel bands, -1 means Spectrogram')
     parser.add_argument('--top_db', type=int, default=None, help='Top decibel value for Mel spectrograms')
 
     parser.add_argument('--patience', type=int, default=30, help='Patience for early stopping')
@@ -142,6 +142,9 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate for the optimizer')
 
     args = parser.parse_args()
+
+    if args.n_mels == -1:
+        args.n_mels = None
 
     log_dir = run_setup(args)
 
