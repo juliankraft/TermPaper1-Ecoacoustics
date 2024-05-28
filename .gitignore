@@ -2,6 +2,7 @@
 *.pkl
 
 # exepted folders
+logs
 code/figures/
 # code/lightning_logs/
 code/model_data/
@@ -9,7 +10,6 @@ code/learning/
 documents/
 notes/
 sources/
-logs/
 
 # VS code 
 *.code-workspace
