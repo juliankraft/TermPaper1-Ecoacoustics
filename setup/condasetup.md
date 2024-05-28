@@ -14,3 +14,10 @@ conda create --name torch python=3.11 matplotlib numpy scikit-learn pandas light
 ``` bash
 conda create --name torch python=3.11 matplotlib numpy scikit-learn pandas lightning pytorch torchvision torchaudio -c pytorch -c nvidia 
 ```
+
+### Version von Basil
+
+``` bash
+mamba create --name torch_insect python=3.11 matplotlib numpy scikit-learn pandas lightning pytorch torchvision torchaudio pytorch jupyterlab tensorboard -c pytorch -c nvidia
+pip install soundfile
+```
