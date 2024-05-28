@@ -24,9 +24,9 @@ class InsectData(Dataset):
             transform: torch.nn.Module,
             class_ids: list[int],
             min_len_in_seconds: int = 1,
-            max_len_in_seconds: int = 5):
+            max_len_in_seconds: int = 10):
         """
-        
+
         min_len_in_seconds: -1 to not subset
         """
 
@@ -35,33 +35,45 @@ class InsectData(Dataset):
         self.class_mapping = {cl: i for i, cl in enumerate(class_ids)}
         self.num_classes = len(self.class_mapping)
 
-        if min_len_in_seconds == -1:
-            df = self.get_metadata()
-            max_length = df['file_length'].max()
-            self.min_len_in_seconds = max_length
-            self.max_len_in_seconds = max_length
-        else:
-            self.min_len_in_seconds = min_len_in_seconds
-            self.max_len_in_seconds = max_len_in_seconds
+        self.min_len_in_seconds = min_len_in_seconds
+        self.max_len_in_seconds = max_len_in_seconds
 
     def get_random_part_padded(self, waveform: Tensor, samplerate: int) -> Tensor:
 
+        # Convert seconds to time steps.
         min_len_in_samples = int(self.min_len_in_seconds * samplerate)
         max_len_in_samples = int(self.max_len_in_seconds * samplerate)
 
-        part_length = np.random.randint(min_len_in_samples, max_len_in_samples + 1)
-        sample_length = waveform.shape[1]
+        if self.min_len_in_seconds == -1:
+            sample_start_index = -max_len_in_samples
+            sample_end_index = None
 
-        part_length = min(part_length, sample_length)
+        else:
+            # Random part length in given range.
+            part_length = np.random.randint(min_len_in_samples, max_len_in_samples + 1)
 
-        sample_start_index = np.random.randint(0, sample_length - part_length + 1)
-        sample_end_index = sample_start_index + part_length
+            # Sample length.
+            sample_length = waveform.shape[1]
 
+            # Cut length to be extracted if sample is shorter than requested part length.
+            part_length = min(part_length, sample_length)
+
+            # Get random start index.
+            sample_start_index = np.random.randint(0, sample_length - part_length + 1)
+
+            # Get end index.
+            sample_end_index = sample_start_index + part_length
+
+        # Get snippet.
         waveform_part = waveform[:, sample_start_index:sample_end_index]
 
+        # Get actual part length.
         actual_part_length = waveform_part.shape[1]
+
+        # Check if padding is necessary.
         pad_length = max_len_in_samples - actual_part_length
 
+        # Pad if necessary.
         waveform_pad = torch.nn.functional.pad(waveform_part, pad=(pad_length, 0, 0, 0))
 
         return waveform_pad
@@ -141,16 +153,14 @@ class InsectDatamodule(pl.LightningDataModule):
             top_db: int | None = None,
             n_mels: int | None = None,
             batch_size: int = 8,
-            train_min_len_in_seconds: int = 1,
-            train_max_len_in_seconds: int = 10,
-            eval_max_len_in_seconds: int = 5,
+            min_len_in_seconds: int = 1,
+            max_len_in_seconds: int = 10,
             num_workers: int = 0):
         super().__init__()
 
         self.batch_size = batch_size
-        self.train_min_len_in_seconds = train_min_len_in_seconds
-        self.train_max_len_in_seconds = train_max_len_in_seconds
-        self.eval_max_len_in_seconds = eval_max_len_in_seconds
+        self.min_len_in_seconds = min_len_in_seconds
+        self.max_len_in_seconds = max_len_in_seconds
 
         self.num_workers = num_workers
 
@@ -217,11 +227,11 @@ class InsectDatamodule(pl.LightningDataModule):
 
     def get_data(self, training_mode: str) -> InsectData:
         if training_mode == 'train':
-            min_len_in_seconds = self.train_min_len_in_seconds
-            max_len_in_seconds = self.train_max_len_in_seconds
+            min_len_in_seconds = self.min_len_in_seconds
+            max_len_in_seconds = self.max_len_in_seconds
         elif training_mode in ['validation', 'test', 'predict']:
             min_len_in_seconds = -1
-            max_len_in_seconds = self.eval_max_len_in_seconds
+            max_len_in_seconds = self.max_len_in_seconds
         else:
             raise ValueError('training_mode must be one of: train, validation, test, predict')
 
@@ -260,6 +270,6 @@ class InsectDatamodule(pl.LightningDataModule):
 
     def predict_dataloader(self) -> EVAL_DATALOADERS: # Defines a Dataloader with all the Data
 
-        data_set = self.get_data(training_mode='test')
+        data_set = self.get_data(training_mode='predict')
 
         return DataLoader(data_set, batch_size=1, shuffle=False, num_workers=self.num_workers)
