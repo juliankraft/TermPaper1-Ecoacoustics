@@ -9,6 +9,7 @@ code/learning/
 documents/
 notes/
 sources/
+logs/
 
 # VS code 
 *.code-workspace
