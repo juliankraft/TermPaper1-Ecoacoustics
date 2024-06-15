@@ -2,15 +2,24 @@ import os
 from argparse import ArgumentParser
 
 PARAM_LIST = [
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.001',
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.01',
-    '--n_mels -1 --n_res_blocks 4 --learning_rate 0.001',
-    '--n_mels -1 --n_res_blocks 4 --learning_rate 0.01',
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.001',
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.01',
-    '--n_mels 64 --n_res_blocks 4 --learning_rate 0.001',
-    '--n_mels 64 --n_res_blocks 4 --learning_rate 0.01',
+    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 3',
+    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 3',
+    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 3',
+    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 3',
+    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 3',
+    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 3',
+    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 3',
+    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 3',
+    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 5',
+    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 5',
+    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 5',
+    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 5',
+    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 5',
+    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 5',
+    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 5',
+    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 5',
 ]
+
 
 if __name__ == '__main__':
 
