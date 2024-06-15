@@ -55,4 +55,5 @@ if __name__ == '__main__':
         if args.dryrun:
             print(command)
         else:
+            print(command)
             os.system(command)
