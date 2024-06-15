@@ -133,7 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_mels', type=int, default=-1, help='Number of Mel bands, -1 means Spectrogram')
     parser.add_argument('--top_db', type=int, default=None, help='Top decibel value for Mel spectrograms')
 
-    parser.add_argument('--patience', type=int, default=30, help='Patience for early stopping')
+    parser.add_argument('--patience', type=int, default=50, help='Patience for early stopping')
 
     parser.add_argument('--base_channels', type=int, default=8, help='Base number of channels')
     parser.add_argument('--kernel_size', type=int, default=3, help='Kernel size for convolutions')
