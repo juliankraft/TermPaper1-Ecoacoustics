@@ -15,7 +15,7 @@ import itertools
 # Define hyperparameters
 n_mels_options = [64, -1]
 n_res_blocks_options = [2, 3, 4]
-learning_rate_options = [0.01, 0.001, 0.0001]
+learning_rate_options = [0.001, 0.0001]
 kernel_size_options = [3, 5, 7]
 
 
