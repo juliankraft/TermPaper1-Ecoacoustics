@@ -3,6 +3,7 @@ import shutil
 from lightning import Trainer
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from lightning.pytorch.loggers import TensorBoardLogger, CSVLogger
+from lightning.pytorch.utilities import seed_everything
 from dataloader import InsectDatamodule
 from model_20 import ResNet
 import yaml
@@ -80,6 +81,7 @@ def run_setup(args: Namespace) -> str:
 
     s += f'_nblock{args.n_res_blocks:d}'
     s += f'_lr{args.learning_rate}'
+    s += f'_ks{args.kernel_size}'
 
     log_dir = os.path.join(args.log_dir, args.tag, s)
 
@@ -109,6 +111,8 @@ def run_setup(args: Namespace) -> str:
 
 if __name__ == '__main__':
 
+    seed_everything(57) # set seed for reproducibility
+
     parser = ArgumentParser()
 
     parser.add_argument('--overwrite', action='store_true', help='Overwrite existing run')
@@ -133,7 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_mels', type=int, default=-1, help='Number of Mel bands, -1 means Spectrogram')
     parser.add_argument('--top_db', type=int, default=None, help='Top decibel value for Mel spectrograms')
 
-    parser.add_argument('--patience', type=int, default=50, help='Patience for early stopping')
+    parser.add_argument('--patience', type=int, default=100, help='Patience for early stopping')
 
     parser.add_argument('--base_channels', type=int, default=8, help='Base number of channels')
     parser.add_argument('--kernel_size', type=int, default=3, help='Kernel size for convolutions')
@@ -156,7 +160,9 @@ if __name__ == '__main__':
             'limit_predict_batches': 1
         }
     else:
-        trainer_kwargs = {}
+        trainer_kwargs = {
+            'max_epochs': -1,
+        }
 
     datamodule, resnet, trainer = trainer_setup(log_dir=log_dir, args=args, **trainer_kwargs)
 
