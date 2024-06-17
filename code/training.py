@@ -3,7 +3,8 @@ import shutil
 from lightning import Trainer
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from lightning.pytorch.loggers import TensorBoardLogger, CSVLogger
-from lightning.pytorch.utilities import seed_everything
+# from lightning.pytorch.utilities import seed_everything
+import lightning as L
 from dataloader import InsectDatamodule
 from model_20 import ResNet
 import yaml
@@ -111,7 +112,7 @@ def run_setup(args: Namespace) -> str:
 
 if __name__ == '__main__':
 
-    seed_everything(57) # set seed for reproducibility
+    L.seed_everything(57) # set seed for reproducibility
 
     parser = ArgumentParser()
 
