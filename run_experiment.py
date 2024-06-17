@@ -10,33 +10,15 @@ Example:
 
 import os
 from argparse import ArgumentParser
+import itertools
 
-PARAM_LIST = [
-    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 3',
-    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 3',
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 3',
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 3',
-    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 3',
-    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 3',
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 3',
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 3',
-    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 5',
-    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 5',
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 5',
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 5',
-    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 5',
-    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 5', #13
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 5',
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 5',
-    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 7', #16
-    '--n_mels 64 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 7', #17
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 7', #18
-    '--n_mels 64 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 7', #19
-    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.001 --kernel_size 7', #20
-    '--n_mels -1 --n_res_blocks 2 --learning_rate 0.0001 --kernel_size 7', #21
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.001 --kernel_size 7', #22 #repeat
-    '--n_mels -1 --n_res_blocks 3 --learning_rate 0.0001 --kernel_size 7' #23 #repeat
-]
+# Define hyperparameters
+n_mels_options = [64, -1]
+n_res_blocks_options = [2, 3, 4]
+learning_rate_options = [0.01, 0.001, 0.0001]
+kernel_size_options = [3, 5, 7]
+
+
 
 
 if __name__ == '__main__':
@@ -45,15 +27,36 @@ if __name__ == '__main__':
     parser.add_argument('--overwrite', action='store_true', help='Overwrite existing run')
     parser.add_argument('--dryrun', action='store_true', help='Print commands without executing')
     parser.add_argument('--dev', action='store_true', help='Quick dev run.')
-    parser.add_argument('--hp_ids', type=int, nargs='+', default=-1, help='HPs to evaluate')
+    # parser.add_argument('--hp_ids', type=int, nargs='+', default=-1, help='HPs to evaluate')
 
     args = parser.parse_args()
-    hp_ids = args.hp_ids
+
+    # creating params list
+    combinations = list(itertools.product(n_mels_options, n_res_blocks_options, learning_rate_options, kernel_size_options))
+
+    PARAM_LIST = [f'--n_mels {n_mels} --n_res_blocks {n_res_blocks} --learning_rate {learning_rate} --kernel_size {kernel_size}' 
+        for n_mels, n_res_blocks, learning_rate, kernel_size in combinations]
+    
+    print("###########################################################################################")
+    print("################################# New Run Starting ########################################")
+    print("###########################################################################################")
+    print("The following hyperparameter combinations can be evaluated:")
+    for index, params in enumerate(PARAM_LIST):
+        print(f'{index}: {params}')
+    print("Select wich part of the list you want to evaluate.")
+
+    start_index_input = input("Enter the start index (default is 0): ")
+    stop_index_input = input(f"Enter the stop index (default is {len(PARAM_LIST) - 1}): ")
+
+    # Set default values if the input is empty
+    start_index = int(start_index_input) if start_index_input.strip() else 0
+    stop_index = int(stop_index_input) if stop_index_input.strip() else len(PARAM_LIST) - 1
+
+
+    hp_ids = range(start_index, stop_index + 1)
 
     num_hp_ids = len(PARAM_LIST)
 
-    if args.hp_ids == -1:
-        hp_ids = range(num_hp_ids)
 
     commands = []
     for hp_id in hp_ids:
@@ -76,5 +79,7 @@ if __name__ == '__main__':
         if args.dryrun:
             print(command)
         else:
+            print("###########################################################################################")
             print(command)
+            print("###########################################################################################")
             os.system(command)
