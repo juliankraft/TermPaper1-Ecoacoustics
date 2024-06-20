@@ -1,0 +1,62 @@
+% Indicate the main file. Must go at the beginning of the file.
+% !TEX root = ../main.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Materials and Methods}
+\label{section2}
+
+\subsection{Programming Language and Frameworks}
+To build and train the deep learning model, the programming language Python was used.
+The Frameworks PyTorch, Lightning are very popular and powerful tools for building deep learning models.
+
+\subsection{Deep Learning Model}
+% Describe the final model architecture
+
+\subsection{Data Processing}
+A custom Dataloader was implemented, to handle the data processing on the fly
+and provide the trainer with then data samples matching the chosen indices.
+There is two steps to the data processing: Sampling and Transformation.
+
+\subsubsection{Sampeling}
+The audio files are of different lengths and the model can only handle inputs of a fixed size.
+since the smallest files are of a length of around 1 second and the longest file is around
+160 seconds, a compromise has to be made. To only sample the files to a length of 1 second
+would mean very little information would be available for the model to learn from. On the other
+hand if the files are sampled for a length of more than a second, the short files would need
+to be padded with zeros meaning the file starts with a basically empty part. This could lead
+to the model learning from the length of the empty part and not the actual audio signal.
+To avoid this, the audio files are sampled to a random length between 1 and 10 seconds and
+then padded with zeros to the fixed length of 10 seconds.
+
+\subsubsection{Transformation}
+The model is actually one that is used for image classification and therefore expects
+2D inputs while an audio file has only one dimension. To transform the samples into
+into a format, that the model can handle a Fourier transformation is applied.
+The Fourier transformation is a mathematical operation that transforms a function of time
+into a function of frequency.
+
+Before the audio files are fed into the model, they are transformed into a mel-spectrogram -
+short for melody spectrogram. A mel-spectrogram is a visual representation of the audio signal 
+aiming to mimic the human perception of sound and is commonly used in audio processing tasks like
+speech recognition and music genre classification. It does however provide certain advantages
+for audio classification in general and can therefore be used in the field of ecoacoustics as well \autocite[7]{stowellComputationalBioacousticsDeep2022}.
+The mel-spectrogram is a 2D array that represents the frequency content of the audio signal over time.
+
+
+
+
+
+
+
+\subsubsection{Training}
+% Describe the training process
+
+
+\subsubsection{Evaluation}
+% Describe the evaluation process
+
+
+\subsection{Hyperparameter Tuning}
