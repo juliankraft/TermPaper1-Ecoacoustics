@@ -6,7 +6,7 @@ from lightning.pytorch.loggers import TensorBoardLogger, CSVLogger
 # from lightning.pytorch.utilities import seed_everything
 import lightning as L
 from dataloader import InsectDatamodule
-from model_20 import ResNet
+from model import ResNet
 import yaml
 from argparse import ArgumentParser, Namespace
 

@@ -2,7 +2,7 @@
 % !TEX root = ../main.tex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2
+% 02_methods
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Materials and Methods}
@@ -99,15 +99,10 @@ to use the standard spectrogram.
     \end{lstlisting}
 
 
-
-
-
-
-
-
 \subsubsection{Training}
 % Describe the training process
-
+The training was completely handled by the PyTorch Lightning framework. The training loop was
+implemented in the training module and the trainer was configured in the main module. 
 
 \subsubsection{Evaluation}
 % Describe the evaluation process
