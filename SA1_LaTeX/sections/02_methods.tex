@@ -142,7 +142,7 @@ data afterwards. The hyperparameter grid search was implemented with a custom Py
 
 The training was done on a single GPU. The model was trained for a maximum of 2000 epochs
 with a early stopping callback, that stopped the training if the validation loss did not improve
-for 200 epochs. The model was trined with a batch size of 10. The optimizer used was the AdamW
+for patience = 100 epochs. The model was trined with a batch size of 10. The optimizer used was the AdamW
 optimizer of the PyTorch library with a weight decay of 0. The loss function used was the
 CrossEntropyLoss function of the PyTorch library with default parameters and class weights
 according to available data per class. Different learning rates where tried during the hyperparameter
