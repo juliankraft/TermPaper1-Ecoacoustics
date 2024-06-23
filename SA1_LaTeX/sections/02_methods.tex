@@ -5,8 +5,8 @@
 % 02_methods
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Materials and Methods}
-\label{section2}
+\section{Methods}
+\label{methods}
 
 \subsection{Programming Language and Frameworks}
 To build and train the deep learning model, the programming language Python was used.
@@ -18,6 +18,8 @@ The Frameworks PyTorch, Lightning are very popular and powerful tools for buildi
 \subsection{Data Processing}
 A custom Dataloader was implemented, to handle the data processing on the fly
 and provide the trainer with then data samples matching the chosen indices.
+To implement the dataloader, the PyTorch Dataset and DataLoader classes where used.
+For the data processing, the torchaudio and numpy libraries where used.
 There is two steps to the data processing: Sampling and Transformation.
 
 \subsubsection{Sampeling}
@@ -29,7 +31,40 @@ hand if the files are sampled for a length of more than a second, the short file
 to be padded with zeros meaning the file starts with a basically empty part. This could lead
 to the model learning from the length of the empty part and not the actual audio signal.
 To avoid this, the audio files where sampled to a random length between 1 and 10 seconds and
-then padded with zeros to the fixed length of 10 seconds.
+then padded with zeros to the fixed length of 10 seconds. To implement this, a custom method
+was implemented as shown in Listing \ref{lst:sampeling}.
+
+\begin{lstlisting}[
+    language=Python, 
+    caption={Python code for the sampeling of the filies}, 
+    label={lst:sampeling}]
+import numpy as np
+import torch
+
+def get_random_part_padded(self, waveform: Tensor, samplerate: int) -> Tensor:
+
+    min_len_in_samples = int(self.min_len_in_seconds * samplerate)
+    max_len_in_samples = int(self.max_len_in_seconds * samplerate)
+
+    if self.min_len_in_seconds == -1:
+        sample_start_index = -max_len_in_samples
+        sample_end_index = None
+
+    else:
+        part_length = np.random.randint(min_len_in_samples, max_len_in_samples + 1)
+        sample_length = waveform.shape[1]
+        part_length = min(part_length, sample_length)
+        sample_start_index = np.random.randint(0, sample_length - part_length + 1)
+        sample_end_index = sample_start_index + part_length
+
+    waveform_part = waveform[:, sample_start_index:sample_end_index]
+    actual_part_length = waveform_part.shape[1]
+    pad_length = max_len_in_samples - actual_part_length
+    waveform_pad = torch.nn.functional.pad(waveform_part, pad=(pad_length, 0, 0, 0))
+
+    return waveform_pad
+\end{lstlisting}
+
 
 \subsubsection{Transformation}
 The model is actually one, usually used for image classification and therefore expects
@@ -40,7 +75,7 @@ into a function of frequency. An other way to describe this is, that a series of
 for short time slices of the audio signal are created and aligned in a 2D array - basically
 a visualization of the audio signal and therefore something a image classification model can handle.
 In addition a second version was implemented, where the STFT where transformed additionally.
-The two versions are visualized for a random sample with no padding in Figure \ref{fig:1:transformations}.
+The two versions are visualized for a random sample with no padding in Figure \ref{fig:transformations}.
 The frequency bins were transformed into mel bins, which are a more human like representation
 of the frequency content of the audio signal. This transformation is called a mel-spectrogram
 and is commonly used in the field of ecoacoustics \autocite[7]{stowellComputationalBioacousticsDeep2022}.
@@ -52,7 +87,7 @@ being passed into the model.
     \captionsetup{width=.7\linewidth}
     \includegraphics[width=0.85\textwidth]{figures/compare_spectrogram.pdf}
     \caption{Visualization of the two transformations of the audio signal.}
-    \label{fig:1:transformations}
+    \label{fig:transformations}
 \end{figure}
 
 To implement the two varieties of the transformation, the library torch and torchaudio where used.
@@ -66,7 +101,6 @@ to use the standard spectrogram.
         language=Python, 
         caption={Python code for the transformation of the audio signal}, 
         label={lst:transformation}]
-
     import torch
     import torchaudio
 
@@ -95,17 +129,50 @@ to use the standard spectrogram.
         spectogram, 
         db_transform, 
         normalize_transform)
-
     \end{lstlisting}
 
 
+\subsection{Fitting the Model}
+
+The training was completely handled by the PyTorch Lightning framework. The logging was done
+with the TensorBoard logger and with an additional custom logger to get easier access to the
+data afterwards. The hyperparameter grid search was implemented with a custom Python script.
+
 \subsubsection{Training}
-% Describe the training process
-The training was completely handled by the PyTorch Lightning framework. The training loop was
-implemented in the training module and the trainer was configured in the main module. 
 
-\subsubsection{Evaluation}
-% Describe the evaluation process
+The training was done on a single GPU. The model was trained for a maximum of 2000 epochs
+with a early stopping callback, that stopped the training if the validation loss did not improve
+for 200 epochs. The model was trined with a batch size of 10. The optimizer used was the AdamW
+optimizer of the PyTorch library with a weight decay of 0. The loss function used was the
+CrossEntropyLoss function of the PyTorch library with default parameters and class weights
+according to available data per class. Different learning rates where tried during the hyperparameter
+tuning referred to in Section \ref{hyperparameter_tuning}. Only the best model was saved and used for
+the evaluation of the model. In order to simplify the evaluation, on completion of the training
+the whole dataset was predicted and saved to a csv file in the log folder.
 
+\subsubsection{Hyperparameter Tuning}
+\label{hyperparameter_tuning}
 
-\subsection{Hyperparameter Tuning}
+For the hyperparameter tuning, a select number of hyperparameters where chosen to be tuned.
+Considerations like the experience of some early tests, the computational resources available
+and the time frame of the project where taken into account. The hyperparameters that where
+chosen for the grid search are shown in Table \ref{tab:hyperparameters}. For the grid search,
+models for all possible combinations of the hyperparameters - 
+in this case \( 2 \times 3 \times 2 \times 3 = 36 \) where trained. To implement the grid search a short Python
+script was written to create the system commands to start the training with the different
+hyperparameter combinations.
+\begin{table}[h]
+    \centering
+    \caption{Hyperparameters and values used for the grid search.}
+    \label{tab:hyperparameters}
+    \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Hyperparameter} & \textbf{Description}                  & \textbf{Variations}   & \textbf{Values} \\ \hline
+    n\_mels                 & transformation (-1 for regular STFT)  & 2                     & 64, -1 \\ \hline
+    n\_res\_blocks          & number of res blocks                  & 3                     & 2, 3, 4 \\ \hline
+    learning\_rate          & step size during optimization         & 2                     & 0.001, 0.0001 \\ \hline
+    kernel\_size            & dimension of the filter               & 3                     & 3, 5, 7 \\ \hline
+    \end{tabular}
+
+\end{table}
+
