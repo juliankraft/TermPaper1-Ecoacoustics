@@ -3,11 +3,7 @@
 
 # exepted folders
 logs/
-logs_archive/
-code/figures/
-# code/lightning_logs/
-code/model_data/
-code/learning/
+archive/
 documents/
 notes/
 sources/
