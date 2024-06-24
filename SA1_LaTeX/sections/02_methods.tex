@@ -8,6 +8,33 @@
 \section{Methods}
 \label{methods}
 
+\subsection{Dataset}
+
+The dataset used in this study is the InsectSet32 dataset \autocite{faissInsectSet32DatasetAutomatic2022}. 
+Containing this description:
+
+\begin{displayquote}
+This dataset contains recordings of 32 sound producing insect species with a total 335 files and a length of 57 minutes. 
+The dataset was compiled for training neural networks to automatically identify insect species while comparing adaptive, 
+waveform-based frontends to conventional mel-spectrogram methods for audio feature extraction. 
+This work will be submitted for publication in the future and the dataset can be used to replicate the results or for similar research. 
+Roughly half of the recordings (147) are of nine species belonging to the order Orthoptera. 
+These recordings stem from a dataset that was originally compiled by Baudewijn Odé (unpublished). 
+The remaining recordings (188) are of 23 species in the family Cicadidae. 
+These recordings were selected from the Global Cicada Sound Collection hosted on Bioacoustica \autocite{bakerBioAcousticaFreeOpen2015}, 
+including recordings published in \autocites{bakerGlobalCicadaSound2015}{poppleRevisionMyopsaltaCrucifera2017}.
+Many recordings from this collection included speech annotations in the beginning of the recordings, 
+therefore the last ten seconds of audio were extracted and used in this dataset. 
+All files were manually inspected and files with strong noise interference or with sounds of multiple species were removed. 
+Between species, the number of files ranges from four to 22 files and the length from 40 seconds to almost nine minutes of audio material for a single species. 
+The files range in length from less than one second to several minutes. 
+All original files were available with sample rates of at least 44.1 kHz or higher but were resampled to 44.1 kHz mono WAV files for consistency.
+\end{displayquote}
+
+The files are split into training, validation and test sets. And there are two .csv files containing
+the labels and the filenames of the recordings.
+
+
 \subsection{Programming Language and Frameworks}
 To build and train the deep learning model, the programming language Python was used.
 The Frameworks PyTorch, Lightning are very popular and powerful tools for building deep learning models.
