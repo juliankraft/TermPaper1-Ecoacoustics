@@ -15,12 +15,20 @@ class ResBlock(torch.nn.Module):
         self.residual_conv = torch.nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=1, padding='same', **kwargs)
 
     def forward(self, x):
+        # First convolution: x: (N, C=1, H, W) -> out: (N, C=out channels, H, W).
         out = self.conv1(x)
+        # Batch normalization.
         out = self.batchnorm1(out)
+        # Apply non-linearity.
         out = self.relu(out)
+        # Second convolution: out: (N, C=out channels, H, W) -> out: (N, C=out channels, H, W).
         out = self.conv2(out)
+        # Batch normalization.
         out = self.batchnorm2(out)
+        # Apply non-linearity and residual connection: (N, C=out channels, H, W) + (N, C=out channels, H, W)
+        # (https://towardsdatascience.com/what-is-residual-connection-efb07cab0d55).
         out = self.relu(out) + self.residual_conv(x)
+        # Apply max pooling: (N, C=out channels, H, W) -> (N, C=out channels, H // n_max_pool, W // n_max_pool).
         return self.maxpool(out)
 
 
@@ -64,9 +72,13 @@ class ResNet(LightningModule):
             *resnet_layers
         )
 
+        # Average across spatial dimension, we end up with one vector.
         self.avgpool = torch.nn.AdaptiveAvgPool2d((1, 1))
+        # Convolution with kernel size 1 is the same as a fully-connected feed-forward neural network.
+        # Map to number of classes.
         self.convout = torch.nn.Conv2d(in_channels=current_out_channels, out_channels=num_classes, kernel_size=1, **kwargs)
 
+        # Softmax transforms a vector, such that all values are in range (0, 1) and the sum = 1.
         self.softmax = torch.nn.Softmax(dim=1)
 
         if class_weights is None:
@@ -74,6 +86,7 @@ class ResNet(LightningModule):
         else:
             class_weights = torch.tensor(class_weights, dtype=torch.float32)
 
+        # Defines cross entropy loss.
         self.cross_entropy_loss_fn = torch.nn.CrossEntropyLoss(weight=class_weights)
 
     def forward(self, x):
@@ -81,8 +94,11 @@ class ResNet(LightningModule):
         x = x.unsqueeze(1)
 
         # Run input through a first convolutional layer.
+        # (N, C=1, H, W) -> (N, C=Base channels, H, W)
         out = self.conv1(x)
+        # z-transform per channel to stabilize training
         out = self.batchnorm1(out)
+        # Apply non-linearity.
         out = self.relu(out)
 
         # Run input through the residual blocks.
@@ -94,9 +110,10 @@ class ResNet(LightningModule):
         # Run input through the output convolutional layer. This is the same as a fully connected layer but it works with 4D tensors.
         out = self.convout(out)
 
-        # Flatten the output tensor to have shape (N, C).
+        # Flatten the output tensor (N, C, 1, 1) to have shape (N, C).
         out  = out.flatten(1)
 
+        # Softmax transforms a vector, such that all values are in range (0, 1) and the sum = 1.
         out = self.softmax(out)
 
         return out
