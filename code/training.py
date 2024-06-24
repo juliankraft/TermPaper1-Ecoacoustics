@@ -34,6 +34,13 @@ def trainer_setup(log_dir: str, args: Namespace, **kwargs) -> tuple[InsectDatamo
         num_classes=datamodule.num_classes,
         learning_rate=args.learning_rate,
         class_weights=datamodule.class_weights)
+    
+    # Calculate the number of trainable parameters
+    num_trainable_params = sum(p.numel() for p in resnet.parameters() if p.requires_grad)
+    trainable_params_dict = {'num_trainable_params': num_trainable_params}
+
+    with open(os.path.join(log_dir, 'all_parameters.yaml'), 'a') as file:
+        yaml.dump(trainable_params_dict, file)
 
     tb_logger = TensorBoardLogger(
         save_dir=log_dir,
@@ -105,7 +112,7 @@ def run_setup(args: Namespace) -> str:
 
     # Write parameters to a YAML file
     with open(os.path.join(log_dir, 'all_parameters.yaml'), 'w') as file:
-        yaml.dump(args, file)
+        yaml.dump(args.__dict__, file)
 
     return log_dir
 
