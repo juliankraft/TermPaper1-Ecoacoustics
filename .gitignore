@@ -2,7 +2,6 @@
 *.pkl
 
 # exepted folders
-logs/
 archive/
 documents/
 notes/
