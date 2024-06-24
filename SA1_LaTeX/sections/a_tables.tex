@@ -1,0 +1,23 @@
+% Indicate the main file. Must go at the beginning of the file.
+% !TEX root = ../main.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION A (Appendix)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Appendix: Tables}
+\label{apendix_tables}
+
+\begin{table}[ht]
+    \centering
+    \caption{Results of the hyperparameter tuning by descending accuracy.}
+    \label{tab:hyperparameters}
+
+
+    \renewcommand{\arraystretch}{0.8} 
+    \input{tables/hyperparameters_results.tex}
+    \renewcommand{\arraystretch}{1.0}
+    
+\end{table}
+
