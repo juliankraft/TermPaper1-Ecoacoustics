@@ -2,10 +2,14 @@
 *.pkl
 
 # exepted folders
+logs/**
+!logs/main_run/
+!logs/main_run/**
 archive/
 documents/
 notes/
 sources/
+drawio/
 
 # VS code 
 *.code-workspace
