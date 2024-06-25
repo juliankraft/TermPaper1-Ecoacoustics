@@ -41,6 +41,40 @@ The Frameworks PyTorch, Lightning are very popular and powerful tools for buildi
 
 \subsection{Deep Learning Model}
 
+The deep learning model used in this study is a convolutional neural network (CNN) with residual blocks
+illustrated in Figure \ref{fig:model_flow_chart}. It consists of three main parts: An input layer,
+a number of residual blocks and an fully connected output layer. The input layer is a convolutional layer with a kernel
+size of 1 and and output channels set to the base channels (bc) - for this experiment it was set to 8.
+After the convolutional layer, the input is normed with a batch normalization layer and then passed through
+a ReLU activation function. This output is than passed trough a number of residual blocks. The model is
+implemented dynamically, so the number of residual blocks can be set as a hyperparameter. Each residual block
+consists of two convolutional layers, each followed by a batch normalization layer and a ReLU activation function.
+The output channels are doubled with every residual block.
+The residual connection is implemented by passing the input trough a separated convolutional layer with a kernel size of 1
+and the same number of output channels as the output of the convolutional layers in the residual block to
+match dimensions. This output is than added to the output of the transformation in the residual block.
+At the end of the residual block, the output is passed trough a max pooling layer to reduce the dimensions.
+The max pooling layer is implemented to alter the kernel size with every residual block. For every odd residual block
+the kernel size is set to n\_max\_pool - in this experiment it was set to 3 - reducing the dimensions by a factor of 3.
+For every even residual block the kernel size is set to 1, so the dimensions stay the same. The output of the residual blocks
+is than passed trough a fully connected layer, consisting of a 
+global average pooling layer to reduce the dimensions to the number of classes. An additional
+convolutional layer with kernel size 1 to match the number of classes. A flattening layer to get of the dimensions H and W
+already reduced to 1 and a softmax activation function to get the probabilities for each class as a vector of length n\_classes
+- in this experiment 32 - elements between 0 and 1 that sum up to 1.
+
+\begin{figure}[h!]
+    \centering
+    \captionsetup{width=.9\linewidth}
+    \includegraphics[width=1\textwidth]{figures/model_flow_chart.pdf}
+    \caption{
+        Flow chart illustrating the models architecture. N: elements in batch, C: channels, H: height, W: width,
+        Cout: output channels, ks: kernel size, bc: base channels, nrb: number of residual blocks,
+        n\_classes: number of classes, nmp: parameter for max pooling
+        }
+    \label{fig:model_flow_chart}
+\end{figure}
+
 
 \subsection{Data Processing}
 A custom Dataloader was implemented, to handle the data processing on the fly
@@ -138,12 +172,12 @@ to use the standard spectrogram.
     normalize_transform = NormalizeSpectrogram()
 
     if n_mels == -1:
-        spectogram = torchaudio.transforms.Spectrogram(
+        spectrogram = torchaudio.transforms.Spectrogram(
             n_fft=n_fft, 
             hop_length=int(n_fft/2), 
             win_length=n_fft)
     else:
-        spectogram = torchaudio.transforms.MelSpectrogram(
+        spectrogram = torchaudio.transforms.MelSpectrogram(
             n_fft=n_fft,
             hop_length=int(n_fft/2),
             win_length=n_fft,
@@ -153,7 +187,7 @@ to use the standard spectrogram.
     db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
 
     self.transform = torch.nn.Sequential(
-        spectogram, 
+        spectrogram, 
         db_transform, 
         normalize_transform)
     \end{lstlisting}
