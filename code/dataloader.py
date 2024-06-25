@@ -202,11 +202,11 @@ class InsectDatamodule(pl.LightningDataModule):
         normalize_transform = NormalizeSpectrogram()
     
         if n_mels is None:
-            spectogram = torchaudio.transforms.Spectrogram(n_fft=n_fft, 
+            spectrogram = torchaudio.transforms.Spectrogram(n_fft=n_fft, 
                                                            hop_length=int(n_fft/2), 
                                                            win_length=n_fft)
         else:
-            spectogram = torchaudio.transforms.MelSpectrogram(
+            spectrogram = torchaudio.transforms.MelSpectrogram(
                 n_fft=n_fft,
                 hop_length=int(n_fft/2),
                 win_length=n_fft,
@@ -217,7 +217,7 @@ class InsectDatamodule(pl.LightningDataModule):
         db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
 
         # setting up the transformation
-        self.transform = torch.nn.Sequential(spectogram, db_transform, normalize_transform)
+        self.transform = torch.nn.Sequential(spectrogram, db_transform, normalize_transform)
         
 
         train_data = self.get_data(training_mode='train')
