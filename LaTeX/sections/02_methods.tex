@@ -227,3 +227,22 @@ hyperparameter combinations.
 
 \end{table}
 
+\subsection{Evaluation}
+
+To evaluate the models, the predictions already implemented at the end of the training.
+The output of the model was a vector of length 32 with probabilities for each class where
+transformed into a class ID by taking the index of the highest probability
+using the argmax function of the numpy library. For all the models they where stored in a csv file
+in their log folder. A script was implemented to summarize the results of the models and
+to calculate the metrics for their performance.
+
+\subsubsection{Metrics}
+
+\textbf{Accuracy:} The accuracy is the ratio of correctly predicted observations to the total observations.
+It was calculated using the mean function of the numpy library:\\ \lstinline{np.mean(y_true == y_pred)}
+
+\textbf{F1 Score:} The F1 score is a metric that combines the precision and recall of a model. In this
+case the macro average was used, which calculates the F1 score for each class and then takes the mean.
+It was calculated using the f1\_score function of the sklearn library:\\ 
+\lstinline{f1_score(y_true, y_pred, average='macro', sample_weight=None, zero_division='warn')}
+
