@@ -1,5 +1,6 @@
 # loading libraries
 import yaml
+import json
 import csv
 import os
 import shutil
@@ -13,6 +14,19 @@ from argparse import ArgumentParser
 yaml.SafeLoader.add_constructor(
     'tag:yaml.org,2002:python/object:argparse.Namespace', 
     yaml.SafeLoader.construct_mapping)
+
+# array to csv string and back
+def array_to_csv_string(array: np.ndarray) -> str:
+    array_string = json.dumps(array.tolist())
+    array_string = array_string.replace(', ', ';')
+
+    return array_string
+
+def csv_string_to_array(csv_string: str) -> np.ndarray:
+    csv_string = csv_string.replace(';', ', ')
+    array = np.array(json.loads(csv_string))
+
+    return array
 
 
 # defining some helper functions
@@ -91,6 +105,10 @@ def evaluate_model(path, show: bool = False, save: bool = False):
     f1 = f1_score(y_true, y_pred, average='macro', sample_weight=None, zero_division='warn')
     f1 = round(f1, 3)
     metadata['f1'] = f1
+
+    f1_per_class_array = f1_score(y_true, y_pred, average=None)
+    f1_per_class = array_to_csv_string(f1_per_class_array)
+    metadata['f1_per_class'] = f1_per_class
 
     accuracy = round(np.mean(y_true == y_pred).item(),3)
     metadata['accuracy'] = accuracy
