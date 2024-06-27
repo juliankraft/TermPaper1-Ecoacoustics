@@ -124,7 +124,7 @@ into a function of frequency. An other way to describe this is, that a series of
 for short time slices of the audio signal are created and aligned in a 2D array - basically
 a visualization of the audio signal and therefore something a image classification model can handle.
 In addition a second version was implemented, where the STFT where transformed additionally.
-The two versions are visualized for a random sample with no padding in Figure \ref{fig:transformations}.
+The two versions are visualized for a random sample with no padding in Figure \ref{fig:compare_spectrogram}.
 The frequency bins were transformed into mel bins, which are a more human like representation
 of the frequency content of the audio signal. This transformation is called a mel-spectrogram
 and is commonly used in the field of ecoacoustics \autocite[7]{stowellComputationalBioacousticsDeep2022}.
@@ -136,7 +136,7 @@ being passed into the model.
     \captionsetup{width=.7\linewidth}
     \includegraphics[width=0.85\textwidth]{figures/compare_spectrogram.pdf}
     \caption{Visualization of the two transformations of the audio signal.}
-    \label{fig:transformations}
+    \label{fig:compare_spectrogram}
 \end{figure}
 
 To implement the two varieties of the transformation, the library torch and torchaudio where used.
