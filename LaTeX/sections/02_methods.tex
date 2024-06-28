@@ -233,8 +233,8 @@ To evaluate the models, the predictions already implemented at the end of the tr
 The output of the model was a vector of length 32 with probabilities for each class where
 transformed into a class ID by taking the index of the highest probability
 using the argmax function of the numpy library. For all the models they where stored in a csv file
-in their log folder. A script was implemented to summarize the results of the models and
-to calculate the metrics for their performance.
+in their log folder. To evaluate the models and calculate the metrics only the predictions
+of the test set where used.
 
 \subsubsection{Metrics}
 
