@@ -23,9 +23,9 @@ class RunEval:
         self.train_log = self.get_train_log()
         self.predictions = self.get_predictions_data()
         self.grouped_train_log = self.combined_train_log()
-        self.accuracy = self.get_accuracy()
-        self.f1 = self.get_f1()
-        self.f1_per_class = self.get_f1_per_class()
+        self.accuracy = self.get_metrics(sel_metric='accuracy')
+        self.f1 = self.get_metrics(sel_metric='f1')
+        self.f1_per_class = self.get_metrics(sel_metric='f1_per_class')
         self.summary = self.get_summary()
 
     def get_model_paths(self):
@@ -121,20 +121,43 @@ class RunEval:
         return data
 
 
-    def get_metrics(self, function: Callable[[list[int], list[int]], np.ndarray|float]):
+    def get_metrics(
+            self, 
+            sel_metric: str | None = None, 
+            operation: Callable[[list[int], list[int]], np.ndarray|float] | None = None, 
+            eval_subset: list = ["test"]):
         """
-        function: Function to be applied to the metrics. The function should take y_true and y_pred as inputs and return a list of metrics.
+        operation: Function to be applied to the metrics. The operation should take y_true and y_pred as inputs and return a list of metrics.
+        sel_metric: chose a implemented metric. Implemented Options are: ["accuracy", "f1", "f1_per_class"]
+        eval_subset: List of data sets to be extracted. Options are: ["train", "validation", "test"]
 
         Example:
         self.get_metrics(lambda x, y: [np.mean(x == y)], eval_subset=["test"])
         """
         
+        operations = {
+            'accuracy': lambda x, y: np.mean(x == y),
+            'f1': lambda x, y: f1_score(x, y, average='macro', sample_weight=None, zero_division='warn'),
+            'f1_per_class': lambda x, y: f1_score(x, y, average=None, sample_weight=None, zero_division='warn')
+        }
+
+        # Check if either metric or operation is given.
+        if not(sel_metric is None or operation is None):
+            raise ValueError('Provide only one of the following: metric or operation.')
+        elif operation is not None:
+            pass
+        elif sel_metric is not None:
+            operation = operations[sel_metric]
+        else:
+            raise ValueError('Provide either metric or operation.')
+        
         metrics = []
         df = pd.DataFrame()
         
+        predictions = self.get_predictions_data(eval_subset=eval_subset)
 
-        for data in self.predictions:
-            new_data = function(data['class_ID'], data['class_ID_pred'])
+        for data in predictions:
+            new_data = operation(data['class_ID'], data['class_ID_pred'])
 
             if isinstance(new_data, np.ndarray):
                 new_row = pd.DataFrame([new_data])
@@ -152,46 +175,23 @@ class RunEval:
         else:
             return metrics
 
-
-    def get_accuracy(self):
-
-        accuracy = self.get_metrics(lambda x, y: np.mean(x == y))
-
-        return accuracy
     
-    def get_f1(self):
-            
-            f1 = self.get_metrics(lambda x, y: f1_score(x, y, average='macro', sample_weight=None, zero_division='warn'))
-    
-            return f1
-    
-    def get_f1_per_class(self):
-            
-            f1_per_class = self.get_metrics(lambda x, y: f1_score(x, y, average=None, sample_weight=None, zero_division='warn'))
-    
-            return f1_per_class
-    
-    def get_best_model(self, metric: str = 'accuracy'):
+    def get_best_model(self, sel_metric: str = 'accuracy', eval_subset: list = ["test"]):
 
-        if metric == 'accuracy':
-
-            metrics = self.accuracy
-
-        else:
-            raise ValueError(f'{metric} is not yet implemented.')
+        metrics = self.get_metrics(sel_metric=sel_metric, eval_subset=eval_subset)
         
         max_value = max(metrics)
         max_index = metrics.index(max_value)
 
         return max_index
     
-    def get_summary(self):
+    def get_summary(self, eval_subset: list = ["test"]):
 
         pd.set_option('future.no_silent_downcasting', True)
 
         data = self.settings
-        data['accuracy'] = self.accuracy
-        data['f1'] = self.f1
+        data['accuracy'] = self.get_metrics(sel_metric='accuracy', eval_subset=eval_subset)
+        data['f1'] = self.get_metrics(sel_metric='f1', eval_subset=eval_subset)
         data['trained_epochs'] = self.grouped_train_log.max()["epoch"]
         data['num_trainable_params'] = self.settings['num_trainable_params']
         data['n_mels'] = data['n_mels'].fillna(-1).astype(int)
