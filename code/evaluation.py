@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from typing import Callable
 from sklearn.metrics import f1_score
+from dataloader import InsectDatamodule
 
 class RunEval:
     """
@@ -18,6 +19,7 @@ class RunEval:
         run_path: Path to the run folder containing the models.
         """
         self.run_path = run_path
+        self.dataloader = self.get_dataloader()
         self.model_paths = self.get_model_paths()
         self.settings = self.get_settings()
         self.train_log = self.get_train_log()
@@ -27,6 +29,11 @@ class RunEval:
         self.f1 = self.get_metrics(sel_metric='f1')
         self.f1_per_class = self.get_metrics(sel_metric='f1_per_class')
         self.summary = self.get_summary()
+    
+    def get_dataloader(self):
+        datamodule = InsectDatamodule(csv_paths=['../data/Cicadidae.csv', '../data/Orthoptera.csv'], batch_size=10)
+        dataloader = datamodule.predict_dataloader()
+        return dataloader
 
     def get_model_paths(self):
         labels = [name for name in os.listdir(self.run_path) if os.path.isdir(os.path.join(self.run_path, name))]
