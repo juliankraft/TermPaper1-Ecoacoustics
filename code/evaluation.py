@@ -167,7 +167,7 @@ class RunEval:
     
     def get_f1_per_class(self):
             
-            f1_per_class = self.get_metrics(lambda x, y: f1_score(x, y, average=None))
+            f1_per_class = self.get_metrics(lambda x, y: f1_score(x, y, average=None, sample_weight=None, zero_division='warn'))
     
             return f1_per_class
     

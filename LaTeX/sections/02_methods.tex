@@ -246,3 +246,22 @@ case the macro average was used, which calculates the F1 score for each class an
 It was calculated using the f1\_score function of the sklearn library:\\ 
 \lstinline{f1_score(y_true, y_pred, average='macro', sample_weight=None, zero_division='warn')}
 
+\textbf{F1 Score per Class:} The F1 score per class is the F1 score for each class. It was calculated
+using the f1\_score function of the sklearn library with the average parameter set to None:\\
+\lstinline{f1_score(y_true, y_pred, average=None, sample_weight=None, zero_division='warn')}\\
+It was calculated for each class and for each model from the hyperparameter tuning. The results
+where than aggregated to get the mean F1 score per class over all models. The results where
+than visualized in a bar chart combined with the available data per class - refer to
+figure \ref{fig:f1_per_class}.
+
+\textbf{Confusion Matrix:} The result of the Predictions of the best model where used to create a confusion matrix.
+The confusion matrix is a table that is often used to analyze the performance of a classification model.
+Predictions and true labels are compared and visualized in a matrix shown in figure \ref{fig:confusion_matrix_best}. 
+The confusion matrix in Figure was calculated using the confusion\_matrix function of the sklearn library.
+
+\textbf{Pearson Test:} The Pearson test was used to test the correlation between the model size and the accuracy
+and F1 score of the models. The Pearson test was calculated using the pearsonr function of the scipy library:\\
+\lstinline{for i, metric in enumerate(['accuracy', 'f1']):}\\
+\lstinline{  pearson_corr, p_value = stats.pearsonr(ex.summary[metric], ex.summary['num_trainable_params'])}\\
+The null hypothesis (H0) posited that there is no correlation between the model size and the models 
+accuracy or F1 score, with the significance level (alpha) set at 0.05.
