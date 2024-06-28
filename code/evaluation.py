@@ -1,10 +1,22 @@
 import yaml
 import os
+
 import pandas as pd
 import numpy as np
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, f1_score
+import scipy.stats as stats
+import torchaudio
+
 from typing import Callable
-from sklearn.metrics import f1_score
 from dataloader import InsectDatamodule
+
+
+
 
 class RunEval:
     """
@@ -206,3 +218,72 @@ class RunEval:
 
         return data
     
+class LatexObject:
+
+    instances = []
+
+    def __init__(
+            self,
+            object_type: str,
+            label: str = "",
+            project_path: str = "../LaTeX/",
+            caption: str = "",
+            create_object: Callable = None):
+        
+        self.object_type = object_type
+        self.label = label
+        self.project_path = project_path
+        self.caption = caption
+        self.path = self.get_path()
+        self.create_object = create_object
+
+        if object_type == "table":
+            pass
+    
+        elif object_type == "figure":
+            plt.rcParams['axes.labelsize'] = 18  # Adjust the size of the axis labels
+            plt.rcParams['xtick.labelsize'] = 12  # Adjust the size of the x-axis tick labels
+            plt.rcParams['ytick.labelsize'] = 12  # Adjust the size of the y-axis tick labels
+            plt.rcParams['axes.titlesize'] = 20  # Adjust the size of the title
+
+        else:
+            raise NotImplementedError(f"Object type {object_type} not implemented")
+        
+        LatexObject.instances.append(self)
+    
+    def get_path(self):
+        return f"{self.project_path}/{self.object_type}s/{self.label}"
+
+    def show(self):
+        print(f"{self.object_type}: {self.label}")
+        print(f"Caption: {self.caption}")
+        if self.object_type == "table":
+            print(self.create_object())
+        elif self.object_type == "figure":
+            self.create_object()
+            plt.show()
+    
+    def export(self):
+        if self.object_type == "table":
+            with open(f"{self.path}.tex", "w") as f:
+                f.write(self.create_object())
+
+        elif self.object_type == "figure":
+            self.create_object()
+            plt.tight_layout()
+            plt.savefig(f"{self.path}.pdf")
+            plt.close()
+    
+    @classmethod
+    def show_all(cls, select_type: list = ["figure"]):
+        if isinstance(select_type, str):
+            select_type = [select_type]
+
+        for instance in cls.instances:
+            if instance.object_type in select_type:
+                instance.show()
+    
+    @classmethod
+    def export_all(cls):
+        for instance in cls.instances:
+            instance.export()
