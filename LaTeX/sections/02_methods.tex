@@ -8,7 +8,7 @@
 \section{Methods}
 \label{methods}
 
-\subsection{Dataset}
+\subsection{Dataset}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 In this study a preexisting dataset is used - the InsectSet32 dataset \autocite{faissInsectSet32DatasetAutomatic2022}. 
 The dataset includes 335 recordings of 32 insect species, totaling 57 minutes.
@@ -23,11 +23,11 @@ were resampled to 44.1 kHz mono WAV for consistency.
 The dataset was already split into training, validation and test sets. There are two .csv files containing
 the labels and the filenames of the recordings.
 
-\subsection{Programming Language and Frameworks}
+\subsection{Programming Language and Frameworks}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To build and train the deep learning model, the programming language Python was used.
 The Frameworks PyTorch, Lightning are very popular and powerful tools for building deep learning models.
 
-\subsection{Deep Learning Model}
+\subsection{Deep Learning Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The deep learning model used in this study is a convolutional neural network (CNN) with residual blocks
 illustrated in Figure \ref{fig:model_flow_chart}. It consists of three main parts: An input layer,
@@ -64,14 +64,14 @@ already reduced to 1 and a softmax activation function to get the probabilities 
 \end{figure}
 
 
-\subsection{Data Processing}
+\subsection{Data Processing}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A custom Dataloader was implemented, to handle the data processing on the fly
 and provide the trainer with then data samples matching the chosen indices.
 To implement the dataloader, the PyTorch Dataset and DataLoader classes where used.
 For the data processing, the torchaudio and numpy libraries where used.
 There is two steps to the data processing: Sampling and Transformation.
 
-\subsubsection{Sampeling}
+\subsubsection{Sampeling}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The audio files are of different lengths and the model can only handle inputs of a fixed size.
 Since the smallest files are of a length of around 1 second and the longest file is around
 160 seconds, a compromise had to be made. To only sample the files to a length of 1 second
@@ -115,7 +115,7 @@ def get_random_part_padded(self, waveform: Tensor, samplerate: int) -> Tensor:
 \end{lstlisting}
 
 
-\subsubsection{Transformation}
+\subsubsection{Transformation}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The model is actually one, usually used for image classification and therefore expects
 two dimensional input while an audio file has only one dimension. To transform the samples into
 into a format, that the model can handle, a short time Fourier transformation  (STFT) was applied.
@@ -146,48 +146,48 @@ and others dependant on them where calculated. In the hyperparameter tuning phas
 that was tuned was the number of mel bins, which was set to either 64 to try the mel-spectrogram or -1
 to use the standard spectrogram.
 
-    \begin{lstlisting}[
-        language=Python, 
-        caption={Python code for the transformation of the audio signal}, 
-        label={lst:transformation}]
-    import torch
-    import torchaudio
+\begin{lstlisting}[
+    language=Python, 
+    caption={Python code for the transformation of the audio signal}, 
+    label={lst:transformation}]
+import torch
+import torchaudio
 
-    class NormalizeSpectrogram(torch.nn.Module):
-        def forward(self, tensor):
-        return (tensor - tensor.min()) / (tensor.max() - tensor.min())
+class NormalizeSpectrogram(torch.nn.Module):
+    def forward(self, tensor):
+    return (tensor - tensor.min()) / (tensor.max() - tensor.min())
 
-    normalize_transform = NormalizeSpectrogram()
+normalize_transform = NormalizeSpectrogram()
 
-    if n_mels == -1:
-        spectrogram = torchaudio.transforms.Spectrogram(
-            n_fft=n_fft, 
-            hop_length=int(n_fft/2), 
-            win_length=n_fft)
-    else:
-        spectrogram = torchaudio.transforms.MelSpectrogram(
-            n_fft=n_fft,
-            hop_length=int(n_fft/2),
-            win_length=n_fft,
-            n_mels=n_mels,
-            f_max=self.sample_rate / 2)
+if n_mels == -1:
+    spectrogram = torchaudio.transforms.Spectrogram(
+        n_fft=n_fft, 
+        hop_length=int(n_fft/2), 
+        win_length=n_fft)
+else:
+    spectrogram = torchaudio.transforms.MelSpectrogram(
+        n_fft=n_fft,
+        hop_length=int(n_fft/2),
+        win_length=n_fft,
+        n_mels=n_mels,
+        f_max=self.sample_rate / 2)
 
-    db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
+db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
 
-    self.transform = torch.nn.Sequential(
-        spectrogram, 
-        db_transform, 
-        normalize_transform)
-    \end{lstlisting}
+self.transform = torch.nn.Sequential(
+    spectrogram, 
+    db_transform, 
+    normalize_transform)
+\end{lstlisting}
 
 
-\subsection{Fitting the Model}
+\subsection{Fitting the Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The training was completely handled by the PyTorch Lightning framework. The logging was done
 with the TensorBoard logger and with an additional custom logger to get easier access to the
 data afterwards. The hyperparameter grid search was implemented with a custom Python script.
 
-\subsubsection{Training}
+\subsubsection{Training}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The training was done on a single GPU. The model was trained for a maximum of 2000 epochs
 with a early stopping callback, that stopped the training if the validation loss did not improve
@@ -199,7 +199,7 @@ tuning referred to in Section \ref{hyperparameter_tuning}. Only the best model w
 the evaluation of the model. In order to simplify the evaluation, on completion of the training
 the whole dataset was predicted and saved to a csv file in the log folder.
 
-\subsubsection{Hyperparameter Tuning}
+\subsubsection{Hyperparameter Tuning}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{hyperparameter_tuning}
 
 For the hyperparameter tuning, a select number of hyperparameters where chosen to be tuned.
@@ -227,7 +227,7 @@ hyperparameter combinations.
 
 \end{table}
 
-\subsection{Evaluation}
+\subsection{Evaluation}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To evaluate the models, the predictions already implemented at the end of the training.
 The output of the model was a vector of length 32 with probabilities for each class where
@@ -236,7 +236,7 @@ using the argmax function of the numpy library. For all the models they where st
 in their log folder. To evaluate the models and calculate the metrics only the predictions
 of the test set where used.
 
-\subsubsection{Metrics}
+\subsubsection{Metrics}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \textbf{Accuracy:} The accuracy is the ratio of correctly predicted observations to the total observations.
 It was calculated using the mean function of the numpy library:\\ \lstinline{np.mean(y_true == y_pred)}
