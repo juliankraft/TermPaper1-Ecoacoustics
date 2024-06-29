@@ -298,7 +298,7 @@ class LatexObject:
                 tail = []
 
             latex_lines_head = [
-                f'\\begin{{figure}}[{position}]',
+                f'\\begin{{table}}[{position}]',
                 f'\\centering',
                 f'\\captionsetup{{width={caption_width}\linewidth}}',
                 f'\\caption{{{self.caption}}}',
@@ -346,8 +346,11 @@ class LatexObject:
                     file.write(f"{line}\n")
 
     def get_latex_command(self):
-        latex_command = f"\\input{{{self.get_path(path_type='latex')}.tex}}"
-        return latex_command
+        latex_command = f"\\input{{{self.get_path(path_type='latex')}.tex}}\n"
+        length = len(latex_command)
+        before = f'%{(length//2 - 6)*"="} Object {(length - length//2 - 5)*"="}%\n'
+        after = f'%{(length-3)*"="}%'
+        return before + latex_command + after
 
     @classmethod
     def show_all(cls, select_type: list = ["figure"]):
