@@ -228,19 +228,21 @@ class LatexObject:
             label: str = "",
             project_path: str = "../LaTeX/",
             caption: str = "",
-            create_object: Callable = None):
+            create_object: Callable = None,
+            table_size: str = None):
         
         self.object_type = object_type
         self.label = label
         self.project_path = project_path
         self.caption = caption
-        self.path = self.get_path()
         self.create_object = create_object
+        self.table_size = table_size
 
         if object_type == "table":
             pass
     
         elif object_type == "figure":
+
             plt.rcParams['axes.labelsize'] = 18  # Adjust the size of the axis labels
             plt.rcParams['xtick.labelsize'] = 12  # Adjust the size of the x-axis tick labels
             plt.rcParams['ytick.labelsize'] = 12  # Adjust the size of the y-axis tick labels
@@ -250,9 +252,73 @@ class LatexObject:
             raise NotImplementedError(f"Object type {object_type} not implemented")
         
         LatexObject.instances.append(self)
+
+        self.path = self.get_path(path_type = "project")
+        self.latex_lines = self.get_latex_lines()
+        self.latex_command = self.get_latex_command()
+
     
-    def get_path(self):
-        return f"{self.project_path}/{self.object_type}s/{self.label}"
+    def get_path(self, path_type):
+
+        latex = f'{self.object_type}s/{self.label}'
+        project = f'{self.project_path}/{latex}'
+        
+        if path_type == "latex":
+            return latex
+        elif path_type == "project":
+            return project
+        else:
+            raise ValueError(f"{path_type} is not a valid path type. Please choose from: ['latex', 'project']")
+        
+    def get_latex_lines(
+            self, 
+            position = "h", 
+            object_width = 1.0,
+            caption_width = 0.9):
+        
+        if self.object_type == "figure":
+            latex_lines = [
+                f'\\begin{{figure}}[{position}]',
+                f'\\centering',
+                f'\\captionsetup{{width={caption_width}\linewidth}}',
+                f'\\includegraphics[width={object_width}\\textwidth]{{{self.get_path(path_type="latex")}.pdf}}',
+                f'\\caption{{{self.caption}}}',
+                f'\label{{tab:{self.label}}}',
+                f'\end{{figure}}'
+                ]
+        
+        elif self.object_type == "table":
+
+            if self.table_size in ['tiny', 'scriptsize', 'footnotesize', 'small', 'normalsize', 'large', 'Large', 'LARGE', 'huge', 'Huge']:
+                head = [f'\\{self.table_size}']
+                tail = ['\\normalsize']
+
+            else:
+                head = []
+                tail = []
+
+            latex_lines_head = [
+                f'\\begin{{figure}}[{position}]',
+                f'\\centering',
+                f'\\captionsetup{{width={caption_width}\linewidth}}',
+                f'\\caption{{{self.caption}}}',
+                f'\label{{fig:{self.label}}}',             
+            ] + head
+
+            latex_lines_tail = tail + [
+                f'\end{{table}}'
+            ]
+
+            latex_lines = latex_lines_head + [self.create_object()] + latex_lines_tail
+            
+        else:
+            raise NotImplementedError(f"Object type {self.object_type} not implemented")
+        
+        return latex_lines
+    
+    def print_latex_lines(self):
+        for line in self.latex_lines:
+            print(line)
 
     def show(self):
         print(f"{self.object_type}: {self.label}")
@@ -265,15 +331,24 @@ class LatexObject:
     
     def export(self):
         if self.object_type == "table":
-            with open(f"{self.path}.tex", "w") as f:
-                f.write(self.create_object())
+            with open(f"{self.path}.tex", "w") as file:
+                for line in self.latex_lines:
+                    file.write(f"{line}\n")
 
         elif self.object_type == "figure":
             self.create_object()
             plt.tight_layout()
             plt.savefig(f"{self.path}.pdf")
             plt.close()
-    
+
+            with open(f"{self.path}.tex", "w") as file:
+                for line in self.latex_lines:
+                    file.write(f"{line}\n")
+
+    def get_latex_command(self):
+        latex_command = f"\\input{{{self.get_path(path_type='latex')}.tex}}"
+        return latex_command
+
     @classmethod
     def show_all(cls, select_type: list = ["figure"]):
         if isinstance(select_type, str):
@@ -287,3 +362,9 @@ class LatexObject:
     def export_all(cls):
         for instance in cls.instances:
             instance.export()
+
+    @classmethod
+    def show_all_latex_commands(cls):
+        for instance in cls.instances:
+            print(f'{instance.label}:')
+            print(f'{instance.latex_command}\n')
