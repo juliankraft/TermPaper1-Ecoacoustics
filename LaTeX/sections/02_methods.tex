@@ -131,13 +131,9 @@ and is commonly used in the field of ecoacoustics \autocite[7]{stowellComputatio
 Both versions of the transformation where transformed into decibels and normalized before 
 being passed into the model.
 
-\begin{figure}[h]
-    \centering
-    \captionsetup{width=7\linewidth}
-    \includegraphics[width=1\textwidth]{figures/compare_spectrogram.pdf}
-    \caption{Visualization of the two transformations of the audio signal.}
-    \label{fig:compare_spectrogram}
-\end{figure}
+%==== figure: compare_spectrogram ====%
+\input{figures/compare_spectrogram.tex}
+%=====================================%
 
 To implement the two varieties of the transformation, the library torch and torchaudio where used.
 A custom transformation method was implemented, that can be used as a layer in the model as shown in 
