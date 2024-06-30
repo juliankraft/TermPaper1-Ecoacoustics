@@ -75,6 +75,24 @@
   keywords = {Biodiversity,Ecosystem services}
 }
 
+@article{cardinaleBiodiversityLossIts2012a,
+  title = {Biodiversity Loss and Its Impact on Humanity},
+  author = {Cardinale, Bradley J. and Duffy, J. Emmett and Gonzalez, Andrew and Hooper, David U. and Perrings, Charles and Venail, Patrick and Narwani, Anita and Mace, Georgina M. and Tilman, David and Wardle, David A. and Kinzig, Ann P. and Daily, Gretchen C. and Loreau, Michel and Grace, James B. and Larigauderie, Anne and Srivastava, Diane S. and Naeem, Shahid},
+  date = {2012-06},
+  journaltitle = {Nature},
+  volume = {486},
+  number = {7401},
+  pages = {59--67},
+  publisher = {Nature Publishing Group},
+  issn = {1476-4687},
+  doi = {10.1038/nature11148},
+  url = {https://www.nature.com/articles/nature11148},
+  urldate = {2024-06-30},
+  abstract = {Two decades ago the first Earth Summit raised the question of how biological diversity loss alters ecosystem functioning and affects humanity; this Review looks at the progress made towards answering this question.},
+  langid = {english},
+  keywords = {Biodiversity,Ecosystem services}
+}
+
 @article{dengHarnessingPowerSound2023,
   title = {Harnessing the {{Power}} of {{Sound}} and {{AI}} to Track {{Global Biodiversity Framework}} ({{GBF}}) {{Targets}}},
   author = {Deng, Iris},
@@ -130,6 +148,19 @@
   langid = {english}
 }
 
+@article{kahlBirdNETDeepLearning2021,
+  title = {{{BirdNET}}: {{A}} Deep Learning Solution for Avian Diversity Monitoring},
+  shorttitle = {{{BirdNET}}},
+  author = {Kahl, Stefan and Wood, Connor and Eibl, Maximilian and Klinck, Holger},
+  date = {2021-01-27},
+  journaltitle = {Ecological Informatics},
+  shortjournal = {Ecological Informatics},
+  volume = {61},
+  pages = {101236},
+  doi = {10.1016/j.ecoinf.2021.101236},
+  abstract = {Variation in avian diversity in space and time is commonly used as a metric to assess environmental changes. Conventionally, such data were collected by expert observers, but passively collected acoustic data is rapidly emerging as an alternative survey technique. However, efficiently extracting accurate species richness data from large audio datasets has proven challenging. Recent advances in deep artificial neural networks (DNNs) have transformed the field of machine learning, frequently outperforming traditional signal processing techniques in the domain of acoustic event detection and classification. We developed a DNN, called BirdNET, capable of identifying 984 North American and European bird species by sound. Our task-specific model architecture was derived from the family of residual networks (ResNets), consisted of 157 layers with more than 27 million parameters, and was trained using extensive data pre-processing, augmentation, and mixup. We tested the model against three independent datasets: (a) 22,960 single-species recordings; (b) 286 h of fully annotated soundscape data collected by an array of autonomous recording units in a design analogous to what researchers might use to measure avian diversity in a field setting; and (c) 33,670 h of soundscape data from a single high-quality omnidirectional microphone deployed near four eBird hotspots frequented by expert birders. We found that domain-specific data augmentation is key to build models that are robust against high ambient noise levels and can cope with overlapping vocalizations. Task-specific model designs and training regimes for audio event recognition perform on-par with very complex architectures used in other domains (e.g., object detection in images). We also found that high temporal resolution of input spectrograms (short FFT window length) improves the classification performance for bird sounds. In summary, BirdNET achieved a mean average precision of 0.791 for single-species recordings, a F0.5 score of 0.414 for annotated soundscapes, and an average correlation of 0.251 with hotspot observation across 121 species and 4 years of audio data. By enabling the efficient extraction of the vocalizations of many hundreds of bird species from potentially vast amounts of audio data, BirdNET and similar tools have the potential to add tremendous value to existing and future passively collected audio datasets and may transform the field of avian ecology and conservation.}
+}
+
 @article{poppleRevisionMyopsaltaCrucifera2017,
   title = {A Revision of the {{Myopsalta}} Crucifera ({{Ashton}}) Species Group ({{Hemiptera}}: {{Cicadidae}}: {{Cicadettini}}) with 14 New Species from Mainland {{Australia}}},
   shorttitle = {Vol. 4340 {{No}}. 1},
@@ -177,6 +208,27 @@
   langid = {english}
 }
 
+@article{stowellAutomaticAcousticDetection2019,
+  title = {Automatic Acoustic Detection of Birds through Deep Learning: The First {{Bird Audio Detection}} Challenge},
+  shorttitle = {Automatic Acoustic Detection of Birds through Deep Learning},
+  author = {Stowell, Dan and Stylianou, Yannis and Wood, Mike and Pamuła, Hanna and Glotin, Hervé},
+  date = {2019-03},
+  journaltitle = {Methods in Ecology and Evolution},
+  shortjournal = {Methods Ecol Evol},
+  volume = {10},
+  number = {3},
+  eprint = {1807.05812},
+  eprinttype = {arXiv},
+  eprintclass = {cs, eess},
+  pages = {368--380},
+  issn = {2041-210X, 2041-210X},
+  doi = {10.1111/2041-210X.13103},
+  url = {http://arxiv.org/abs/1807.05812},
+  urldate = {2024-06-30},
+  abstract = {Assessing the presence and abundance of birds is important for monitoring specific species as well as overall ecosystem health. Many birds are most readily detected by their sounds, and thus passive acoustic monitoring is highly appropriate. Yet acoustic monitoring is often held back by practical limitations such as the need for manual configuration, reliance on example sound libraries, low accuracy, low robustness, and limited ability to generalise to novel acoustic conditions. Here we report outcomes from a collaborative data challenge showing that with modern machine learning including deep learning, general-purpose acoustic bird detection can achieve very high retrieval rates in remote monitoring data --- with no manual recalibration, and no pre-training of the detector for the target species or the acoustic conditions in the target environment. Multiple methods were able to attain performance of around 88\% AUC (area under the ROC curve), much higher performance than previous general-purpose methods. We present new acoustic monitoring datasets, summarise the machine learning techniques proposed by challenge teams, conduct detailed performance evaluation, and discuss how such approaches to detection can be integrated into remote monitoring projects.},
+  keywords = {Computer Science - Sound,Electrical Engineering and Systems Science - Audio and Speech Processing}
+}
+
 @article{stowellComputationalBioacousticsDeep2022,
   title = {Computational Bioacoustics with Deep Learning: A Review and Roadmap},
   shorttitle = {Computational Bioacoustics with Deep Learning},
@@ -185,7 +237,7 @@
   journaltitle = {PeerJ},
   volume = {10},
   eprint = {2112.06725},
-  eprinttype = {arxiv},
+  eprinttype = {arXiv},
   eprintclass = {cs, eess, q-bio},
   pages = {e13152},
   issn = {2167-8359},
@@ -195,4 +247,9 @@
   abstract = {Animal vocalisations and natural soundscapes are fascinating objects of study, and contain valuable evidence about animal behaviours, populations and ecosystems. They are studied in bioacoustics and ecoacoustics, with signal processing and analysis an important component. Computational bioacoustics has accelerated in recent decades due to the growth of affordable digital sound recording devices, and to huge progress in informatics such as big data, signal processing and machine learning. Methods are inherited from the wider field of deep learning, including speech and image processing. However, the tasks, demands and data characteristics are often different from those addressed in speech or music analysis. There remain unsolved problems, and tasks for which evidence is surely present in many acoustic signals, but not yet realised. In this paper I perform a review of the state of the art in deep learning for computational bioacoustics, aiming to clarify key concepts and identify and analyse knowledge gaps. Based on this, I offer a subjective but principled roadmap for computational bioacoustics with deep learning: topics that the community should aim to address, in order to make the most of future developments in AI and informatics, and to use audio data in answering zoological and ecological questions.},
   langid = {english},
   keywords = {Computer Science - Sound,Electrical Engineering and Systems Science - Audio and Speech Processing,Quantitative Biology - Quantitative Methods}
+}
+
+@online{zotero-314,
+  url = {https://arxiv.org/pdf/1807.05812},
+  urldate = {2024-06-30}
 }
