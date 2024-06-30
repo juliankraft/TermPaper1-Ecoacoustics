@@ -348,9 +348,7 @@ class LatexObject:
     def get_latex_command(self):
         latex_command = f"\\input{{{self.get_path(path_type='latex')}.tex}}\n"
         length = len(latex_command)
-        length_middle = len(self.label) + len(self.object_type) + 4
-        length_d = length - length_middle
-        before = f'%{(length_d//2 - 1)*"="} {self.object_type}: {self.label} {(length - length_middle - length_d//2 - 2)*"="}%\n'
+        before = f'%{4*"="} {self.object_type}: {self.label} {4*"="}%\n'
         after = f'%{(length-3)*"="}%'
         return before + latex_command + after
 
@@ -371,5 +369,4 @@ class LatexObject:
     @classmethod
     def show_all_latex_commands(cls):
         for instance in cls.instances:
-            print(f'{instance.label}:')
             print(f'{instance.latex_command}\n')
