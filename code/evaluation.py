@@ -202,7 +202,7 @@ class RunEval:
         max_value = max(metrics)
         max_index = metrics.index(max_value)
 
-        return max_index
+        return max_index, max_value
     
     def get_summary(self, eval_subset: list = ["test"]):
 
@@ -229,14 +229,22 @@ class LatexObject:
             project_path: str = "../LaTeX/",
             caption: str = "",
             create_object: Callable = None,
+            calculate_caption_elements: Callable = None,
             table_size: str = None):
         
         self.object_type = object_type
         self.label = label
         self.project_path = project_path
-        self.caption = caption
+    
         self.create_object = create_object
+        self.calculate_caption_elements = calculate_caption_elements
         self.table_size = table_size
+        self.caption_input = caption
+
+        if self.calculate_caption_elements is None:
+            self.caption = self.caption_input
+        else:
+            self.caption = self.update_caption()
 
         if object_type == "table":
             pass
@@ -257,6 +265,25 @@ class LatexObject:
         self.latex_lines = self.get_latex_lines()
         self.latex_command = self.get_latex_command()
 
+    def update_caption(self):
+        parts = self.caption_input.split("***")
+
+        elements = self.calculate_caption_elements()
+
+        if not isinstance(elements, list):
+            elements = [elements]
+        
+        elements_str = [str(element) for element in elements]
+        
+        
+        if len(parts) - 1 != len(elements_str):
+            raise ValueError("The number of placeholders '***' does not match the number of elements in caption_updates.")
+
+        new_caption = parts[0]
+        for i in range(len(elements_str)):
+            new_caption += elements_str[i] + parts[i + 1]
+        
+        return new_caption
     
     def get_path(self, path_type):
 
@@ -321,7 +348,7 @@ class LatexObject:
             print(line)
 
     def show(self):
-        print(f"{self.object_type}: {self.label}")
+        print(f"{self.object_type.capitalize()}: {self.label}")
         print(f"Caption: {self.caption}")
         if self.object_type == "table":
             print(self.create_object())
