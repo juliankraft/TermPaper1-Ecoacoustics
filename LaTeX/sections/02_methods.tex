@@ -183,7 +183,7 @@ The training was completely handled by the PyTorch Lightning framework. The logg
 with the TensorBoard logger and with an additional custom logger to get easier access to the
 data afterwards. The hyperparameter grid search was implemented with a custom Python script.
 
-\subsubsection{Training}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Training}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The training was done on a single GPU. The model was trained for a maximum of 2000 epochs
 with a early stopping callback, that stopped the training if the validation loss did not improve
@@ -195,7 +195,7 @@ tuning referred to in Section \ref{hyperparameter_tuning}. Only the best model w
 the evaluation of the model. In order to simplify the evaluation, on completion of the training
 the whole dataset was predicted and saved to a csv file in the log folder.
 
-\subsubsection{Hyperparameter Tuning}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Hyperparameter Tuning}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{hyperparameter_tuning}
 
 For the hyperparameter tuning, a select number of hyperparameters where chosen to be tuned.
@@ -226,13 +226,15 @@ hyperparameter combinations.
 \subsection{Evaluation}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To evaluate the models, the predictions already implemented at the end of the training.
-The output of the model was a vector of length 32 with probabilities for each class where
-transformed into a class ID by taking the index of the highest probability
+The output of the model was a vector of length 32 with probabilities for each class, they where
+transformed into a predicted class ID by taking the index of the highest probability
 using the argmax function of the numpy library. For all the models they where stored in a csv file
-in their log folder. To evaluate the models and calculate the metrics only the predictions
-of the test set where used.
+in their log folder. To evaluate the hyperparameter tuning the predictions of the validation set
+where used, as they where not used during the training of the model except for the early stopping
+and the selection of the best model. To evaluate the best model, only the predictions of the test set
+where used.
 
-\subsubsection{Metrics}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Metrics and Tests}
 
 \textbf{Accuracy:} The accuracy is the ratio of correctly predicted observations to the total observations.
 It was calculated using the mean function of the numpy library:\\ \lstinline{np.mean(y_true == y_pred)}
