@@ -310,7 +310,7 @@ class LatexObject:
                 f'\\captionsetup{{width={caption_width}\linewidth}}',
                 f'\\includegraphics[width={object_width}\\textwidth]{{{self.get_path(path_type="latex")}.pdf}}',
                 f'\\caption{{{self.caption}}}',
-                f'\label{{tab:{self.label}}}',
+                f'\label{{fig:{self.label}}}',
                 f'\end{{figure}}'
                 ]
         
@@ -329,7 +329,7 @@ class LatexObject:
                 f'\\centering',
                 f'\\captionsetup{{width={caption_width}\linewidth}}',
                 f'\\caption{{{self.caption}}}',
-                f'\label{{fig:{self.label}}}',             
+                f'\label{{tab:{self.label}}}',             
             ] + head
 
             latex_lines_tail = tail + [
