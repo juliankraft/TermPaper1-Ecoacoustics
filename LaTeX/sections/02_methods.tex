@@ -51,19 +51,6 @@ convolutional layer with kernel size 1 to match the number of classes. A flatten
 already reduced to 1 and a softmax activation function to get the probabilities for each class as a vector of length n\_classes
 - in this experiment 32 - elements between 0 and 1 that sum up to 1.
 
-\begin{figure}[h]
-    \centering
-    \captionsetup{width=.9\linewidth}
-    \includegraphics[width=1\textwidth]{figures/model_flow_chart.pdf}
-    \caption{
-        Flow chart illustrating the models architecture. N: elements in batch, C: channels, H: height, W: width,
-        Cout: output channels, ks: kernel size, bc: base channels, nrb: number of residual blocks,
-        n\_classes: number of classes, nmp: parameter for max pooling
-        }
-    \label{fig:model_flow_chart}
-\end{figure}
-
-
 \subsection{Data Processing}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A custom Dataloader was implemented, to handle the data processing on the fly
 and provide the trainer with then data samples matching the chosen indices.
@@ -71,7 +58,7 @@ To implement the dataloader, the PyTorch Dataset and DataLoader classes where us
 For the data processing, the torchaudio and numpy libraries where used.
 There is two steps to the data processing: Sampling and Transformation.
 
-\subsubsection{Sampeling}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Sampling}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The audio files are of different lengths and the model can only handle inputs of a fixed size.
 Since the smallest files are of a length of around 1 second and the longest file is around
 160 seconds, a compromise had to be made. To only sample the files to a length of 1 second
@@ -81,39 +68,11 @@ to be padded with zeros meaning the file starts with a basically empty part. Thi
 to the model learning from the length of the empty part and not the actual audio signal.
 To avoid this, the audio files where sampled to a random length between 1 and 10 seconds and
 then padded with zeros to the fixed length of 10 seconds. To implement this, a custom method
-was implemented as shown in Listing \ref{lst:sampeling}.
+was implemented as shown in Listing \ref{lst:sampling}.
 
-\begin{lstlisting}[
-    language=Python, 
-    caption={Python code for the sampeling of the filies}, 
-    label={lst:sampeling}]
-import numpy as np
-import torch
-
-def get_random_part_padded(self, waveform: Tensor, samplerate: int) -> Tensor:
-
-    min_len_in_samples = int(self.min_len_in_seconds * samplerate)
-    max_len_in_samples = int(self.max_len_in_seconds * samplerate)
-
-    if self.min_len_in_seconds == -1:
-        sample_start_index = -max_len_in_samples
-        sample_end_index = None
-
-    else:
-        part_length = np.random.randint(min_len_in_samples, max_len_in_samples + 1)
-        sample_length = waveform.shape[1]
-        part_length = min(part_length, sample_length)
-        sample_start_index = np.random.randint(0, sample_length - part_length + 1)
-        sample_end_index = sample_start_index + part_length
-
-    waveform_part = waveform[:, sample_start_index:sample_end_index]
-    actual_part_length = waveform_part.shape[1]
-    pad_length = max_len_in_samples - actual_part_length
-    waveform_pad = torch.nn.functional.pad(waveform_part, pad=(pad_length, 0, 0, 0))
-
-    return waveform_pad
-\end{lstlisting}
-
+%==== listing: sampling ====%
+\input{listings/sampling.tex}
+%===========================%
 
 \subsubsection{Transformation}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The model is actually one, usually used for image classification and therefore expects
@@ -131,10 +90,6 @@ and is commonly used in the field of ecoacoustics \autocite[7]{stowellComputatio
 Both versions of the transformation where transformed into decibels and normalized before 
 being passed into the model.
 
-%==== figure: compare_spectrogram ====%
-\input{figures/compare_spectrogram.tex}
-%=====================================%
-
 To implement the two varieties of the transformation, the library torch and torchaudio where used.
 A custom transformation method was implemented, that can be used as a layer in the model as shown in 
 Listing \ref{lst:transformation}. Some of the parameters of the transformation where made configurable
@@ -142,40 +97,9 @@ and others dependant on them where calculated. In the hyperparameter tuning phas
 that was tuned was the number of mel bins, which was set to either 64 to try the mel-spectrogram or -1
 to use the standard spectrogram.
 
-\begin{lstlisting}[
-    language=Python, 
-    caption={Python code for the transformation of the audio signal}, 
-    label={lst:transformation}]
-import torch
-import torchaudio
-
-class NormalizeSpectrogram(torch.nn.Module):
-    def forward(self, tensor):
-    return (tensor - tensor.min()) / (tensor.max() - tensor.min())
-
-normalize_transform = NormalizeSpectrogram()
-
-if n_mels == -1:
-    spectrogram = torchaudio.transforms.Spectrogram(
-        n_fft=n_fft, 
-        hop_length=int(n_fft/2), 
-        win_length=n_fft)
-else:
-    spectrogram = torchaudio.transforms.MelSpectrogram(
-        n_fft=n_fft,
-        hop_length=int(n_fft/2),
-        win_length=n_fft,
-        n_mels=n_mels,
-        f_max=self.sample_rate / 2)
-
-db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
-
-self.transform = torch.nn.Sequential(
-    spectrogram, 
-    db_transform, 
-    normalize_transform)
-\end{lstlisting}
-
+%==== listing: transformation ====%
+\input{listings/transformation.tex}
+%=================================%
 
 \subsection{Fitting the Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -206,22 +130,10 @@ models for all possible combinations of the hyperparameters -
 in this case \( 2 \times 3 \times 2 \times 3 = 36 \) where trained. To implement the grid search a short Python
 script was written to create the system commands to start the training with the different
 hyperparameter combinations.
-\begin{table}[h]
-    \centering
-    \caption{Hyperparameters and values used for the grid search.}
-    \label{tab:hyperparameters}
-    \begin{tabular}{llll}
-    \toprule
-    \textbf{Hyperparameter} & \textbf{Description}                  & \textbf{Variations}   & \textbf{Values} \\
-    \midrule
-    n\_mels                 & transformation (-1 for regular STFT)  & 2                     & 64, -1 \\
-    n\_res\_blocks          & number of res blocks                  & 3                     & 2, 3, 4 \\
-    learning\_rate          & step size during optimization         & 2                     & 0.001, 0.0001 \\
-    kernel\_size            & dimension of the filter               & 3                     & 3, 5, 7 \\
-    \bottomrule
-\end{tabular}
 
-\end{table}
+%==== table: hyperparameters ====%
+\input{tables/hyperparameters.tex}
+%================================%
 
 \subsection{Evaluation}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -264,5 +176,13 @@ or F1 score of the models. The Pearson test was calculated using the pearsonr fu
 \lstinline{for i, metric in enumerate(['accuracy', 'f1']):}\\
 \lstinline{  pearson_corr, p_value = stats.pearsonr(ex.summary[metric], ex.summary['num_trainable_params'])}\\
 And the correlation between the train data count and the F1 score per class:\\
-\lstinline{pearson_corr, p_value = stats.pearsonr(data['f1'], data['count'])}
+\lstinline{pearson_corr, p_value = stats.pearsonr(data['f1'], data['count'])}\\
 For both cases the null hypothesis (H0) posited that there is no correlation, with the significance level (alpha) set at 0.05.
+
+%==== figure: compare_spectrogram ====%
+\input{figures/compare_spectrogram.tex}
+%=====================================%
+
+%==== figure: model_flow_chart ====%
+\input{figures/model_flow_chart.tex}
+%==================================%

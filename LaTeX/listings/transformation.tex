@@ -1,0 +1,33 @@
+\begin{lstlisting}[
+    language=Python, 
+    caption={Python code for the transformation of the audio signal}, 
+    label={lst:transformation}]
+import torch
+import torchaudio
+
+class NormalizeSpectrogram(torch.nn.Module):
+    def forward(self, tensor):
+    return (tensor - tensor.min()) / (tensor.max() - tensor.min())
+
+normalize_transform = NormalizeSpectrogram()
+
+if n_mels == -1:
+    spectrogram = torchaudio.transforms.Spectrogram(
+        n_fft=n_fft, 
+        hop_length=int(n_fft/2), 
+        win_length=n_fft)
+else:
+    spectrogram = torchaudio.transforms.MelSpectrogram(
+        n_fft=n_fft,
+        hop_length=int(n_fft/2),
+        win_length=n_fft,
+        n_mels=n_mels,
+        f_max=self.sample_rate / 2)
+
+db_transform = torchaudio.transforms.AmplitudeToDB(top_db=top_db)
+
+self.transform = torch.nn.Sequential(
+    spectrogram, 
+    db_transform, 
+    normalize_transform)
+\end{lstlisting}

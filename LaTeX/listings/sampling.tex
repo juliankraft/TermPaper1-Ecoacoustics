@@ -1,0 +1,30 @@
+\begin{lstlisting}[
+    language=Python, 
+    caption={Python code for the sampling of the filies}, 
+    label={lst:sampling}]
+import numpy as np
+import torch
+
+def get_random_part_padded(self, waveform: Tensor, samplerate: int) -> Tensor:
+
+    min_len_in_samples = int(self.min_len_in_seconds * samplerate)
+    max_len_in_samples = int(self.max_len_in_seconds * samplerate)
+
+    if self.min_len_in_seconds == -1:
+        sample_start_index = -max_len_in_samples
+        sample_end_index = None
+
+    else:
+        part_length = np.random.randint(min_len_in_samples, max_len_in_samples + 1)
+        sample_length = waveform.shape[1]
+        part_length = min(part_length, sample_length)
+        sample_start_index = np.random.randint(0, sample_length - part_length + 1)
+        sample_end_index = sample_start_index + part_length
+
+    waveform_part = waveform[:, sample_start_index:sample_end_index]
+    actual_part_length = waveform_part.shape[1]
+    pad_length = max_len_in_samples - actual_part_length
+    waveform_pad = torch.nn.functional.pad(waveform_part, pad=(pad_length, 0, 0, 0))
+
+    return waveform_pad
+\end{lstlisting}

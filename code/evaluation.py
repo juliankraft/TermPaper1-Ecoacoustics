@@ -250,11 +250,22 @@ class LatexObject:
             pass
     
         elif object_type == "figure":
+            
+            # Set global font sizes
+            plt.rcParams['axes.titlesize'] = 10  # Adjust the size of the title
+            plt.rcParams['axes.labelsize'] = 8  # Adjust the size of the axis labels
+            plt.rcParams['xtick.labelsize'] = 6  # Adjust the size of the x-axis tick labels
+            plt.rcParams['ytick.labelsize'] = 6  # Adjust the size of the y-axis tick labels
+            plt.rcParams['font.size'] = 8  # General font size for all text elements
+            plt.rcParams['legend.fontsize'] = 6  # Font size for legend text
 
-            plt.rcParams['axes.labelsize'] = 18  # Adjust the size of the axis labels
-            plt.rcParams['xtick.labelsize'] = 12  # Adjust the size of the x-axis tick labels
-            plt.rcParams['ytick.labelsize'] = 12  # Adjust the size of the y-axis tick labels
-            plt.rcParams['axes.titlesize'] = 20  # Adjust the size of the title
+            # Set global line width for axes and ticks
+            plt.rcParams['axes.linewidth'] = 0.2  # Adjust the thickness of the axes frame lines
+            plt.rcParams['xtick.major.width'] = 0.1  # Adjust the thickness of the major tick lines on the x-axis
+            plt.rcParams['ytick.major.width'] = 0.1  # Adjust the thickness of the major tick lines on the y-axis
+            plt.rcParams['xtick.minor.width'] = 0.05  # Adjust the thickness of the minor tick lines on the x-axis
+            plt.rcParams['ytick.minor.width'] = 0.05  # Adjust the thickness of the minor tick lines on the y-axis
+
 
         else:
             raise NotImplementedError(f"Object type {object_type} not implemented")
@@ -300,15 +311,14 @@ class LatexObject:
     def get_latex_lines(
             self, 
             position = "h", 
-            object_width = 1.0,
-            caption_width = 0.9):
+            caption_width = 0.8):
         
         if self.object_type == "figure":
             latex_lines = [
                 f'\\begin{{figure}}[{position}]',
                 f'\\centering',
                 f'\\captionsetup{{width={caption_width}\linewidth}}',
-                f'\\includegraphics[width={object_width}\\textwidth]{{{self.get_path(path_type="latex")}.pdf}}',
+                f'\\includegraphics{{{self.get_path(path_type="latex")}.pdf}}',
                 f'\\caption{{{self.caption}}}',
                 f'\label{{fig:{self.label}}}',
                 f'\end{{figure}}'

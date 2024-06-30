@@ -1,0 +1,16 @@
+\begin{table}[h]
+    \centering
+    \caption{Hyperparameters and values used for the grid search.}
+    \label{tab:hyperparameters}
+    \begin{tabular}{llll}
+    \toprule
+    \textbf{Hyperparameter} & \textbf{Description}                  & \textbf{Variations}   & \textbf{Values} \\
+    \midrule
+    n\_mels                 & transformation (-1 for regular STFT)  & 2                     & 64, -1 \\
+    n\_res\_blocks          & number of res blocks                  & 3                     & 2, 3, 4 \\
+    learning\_rate          & step size during optimization         & 2                     & 0.001, 0.0001 \\
+    kernel\_size            & dimension of the filter               & 3                     & 3, 5, 7 \\
+    \bottomrule
+\end{tabular}
+
+\end{table}
