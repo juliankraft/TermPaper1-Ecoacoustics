@@ -237,7 +237,9 @@ where used.
 \subsubsection{Metrics and Tests}
 
 \textbf{Accuracy:} The accuracy is the ratio of correctly predicted observations to the total observations.
-It was calculated using the mean function of the numpy library:\\ \lstinline{np.mean(y_true == y_pred)}
+It was calculated using the mean function of the numpy library:\\ 
+\lstinline{np.mean(y_true == y_pred)}
+The accuracy was the metric chosen to chose the best model for further evaluation.
 
 \textbf{F1 Score:} The F1 score is a metric that combines the precision and recall of a model. In this
 case the macro average was used, which calculates the F1 score for each class and then takes the mean.
@@ -258,8 +260,9 @@ Predictions and true labels are compared and visualized in a matrix shown in fig
 The confusion matrix in Figure was calculated using the confusion\_matrix function of the sklearn library.
 
 \textbf{Pearson Test:} The Pearson test was used to test the correlation between the model size and the accuracy
-and F1 score of the models. The Pearson test was calculated using the pearsonr function of the scipy library:\\
+or F1 score of the models. The Pearson test was calculated using the pearsonr function of the scipy library:\\
 \lstinline{for i, metric in enumerate(['accuracy', 'f1']):}\\
 \lstinline{  pearson_corr, p_value = stats.pearsonr(ex.summary[metric], ex.summary['num_trainable_params'])}\\
-The null hypothesis (H0) posited that there is no correlation between the model size and the models 
-accuracy or F1 score, with the significance level (alpha) set at 0.05.
+And the correlation between the train data count and the F1 score per class:\\
+\lstinline{pearson_corr, p_value = stats.pearsonr(data['f1'], data['count'])}
+For both cases the null hypothesis (H0) posited that there is no correlation, with the significance level (alpha) set at 0.05.
