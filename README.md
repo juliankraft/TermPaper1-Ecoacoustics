@@ -7,8 +7,8 @@ This study aims to reproduce the results of a previous research on insect sound 
 **Author**:         Julian Kraft  
 **Tutor**:          Dr. Matthias Nyfeler  
 **Institution**:    Zurich University of Applied Sciences (ZHAW)  
-**Project**:      Term Paper 1  
-**Date**:         2024-06-18
+**Project**:        Term Paper 1  
+**Date**:           2024-06-18
 
 **Data:** InsectSet32 dataset from Zenodo: [link](https://zenodo.org/records/7072196)
 
