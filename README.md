@@ -12,6 +12,8 @@ This study aims to reproduce the results of a previous research on insect sound 
 
 **Data:** InsectSet32 dataset from Zenodo: [link](https://zenodo.org/records/7072196)
 
+**Paper:** [link](LaTeX/main.pdf)
+
 ### Repository Content
 
 This repository provides all the relevant code, data and training logs as well as the LaTeX source code and
@@ -23,4 +25,3 @@ and all visualizations used in the term paper.
 - `code/`: Python code for the CNN model and the evaluation
 - `data/`: InsectSet32 dataset
 - `logs/`: training logs of the CNN model
-- `code/visualization.ipynb`: visualizations used in the term paper
