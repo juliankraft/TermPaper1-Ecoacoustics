@@ -13,6 +13,7 @@ This study aims to reproduce the results of a previous research on insect sound 
 **Data:** InsectSet32 dataset from Zenodo: [link](https://zenodo.org/records/7072196)
 
 **Paper:** [link](LaTeX/main.pdf)
+**Visualizations:** [link](code/visualizations.ipynb)
 
 ### Repository Content
 
@@ -25,3 +26,8 @@ and all visualizations used in the term paper.
 - `code/`: Python code for the CNN model and the evaluation
 - `data/`: InsectSet32 dataset
 - `logs/`: training logs of the CNN model
+
+### Environment
+
+The model was trained on a regular gaming computer equipped with an NVIDIA GeForce RTX 2060 SUPER.
+The Environment was set up using Anaconda the packages used are listed in `environment.yml`.
