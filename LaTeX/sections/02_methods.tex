@@ -30,7 +30,7 @@ The Frameworks PyTorch, Lightning are very popular and powerful tools for buildi
 \subsection{Deep Learning Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The deep learning model used in this study is a convolutional neural network (CNN) with residual blocks
-illustrated in Figure \ref{fig:model_flow_chart}. It consists of three main parts: An input layer,
+illustrated in \autoref{fig:model_flow_chart}. It consists of three main parts: An input layer,
 a number of residual blocks and an fully connected output layer. The input layer is a convolutional layer with a kernel
 size of 1 and and output channels set to the base channels (bc) - for this experiment it was set to 8.
 After the convolutional layer, the input is normed with a batch normalization layer and then passed through
@@ -68,7 +68,7 @@ to be padded with zeros meaning the file starts with a basically empty part. Thi
 to the model learning from the length of the empty part and not the actual audio signal.
 To avoid this, the audio files where sampled to a random length between 1 and 10 seconds and
 then padded with zeros to the fixed length of 10 seconds. To implement this, a custom method
-was implemented as shown in Listing \ref{lst:sampling}.
+was implemented as shown in \autoref{lst:sampling}.
 
 %==== listing: sampling ====%
 \input{listings/sampling.tex}
@@ -83,7 +83,7 @@ into a function of frequency. An other way to describe this is, that a series of
 for short time slices of the audio signal are created and aligned in a 2D array - basically
 a visualization of the audio signal and therefore something a image classification model can handle.
 In addition a second version was implemented, where the STFT where transformed additionally.
-The two versions are visualized for a random sample with no padding in Figure \ref{fig:compare_spectrogram}.
+The two versions are visualized for a random sample with no padding in \autoref{fig:compare_spectrogram}.
 The frequency bins were transformed into mel bins, which are a more human like representation
 of the frequency content of the audio signal. This transformation is called a mel-spectrogram
 and is commonly used in the field of ecoacoustics \autocite[7]{stowellComputationalBioacousticsDeep2022}.
@@ -92,7 +92,7 @@ being passed into the model.
 
 To implement the two varieties of the transformation, the library torch and torchaudio where used.
 A custom transformation method was implemented, that can be used as a layer in the model as shown in 
-Listing \ref{lst:transformation}. Some of the parameters of the transformation where made configurable
+\autoref{lst:transformation}. Some of the parameters of the transformation where made configurable
 and others dependant on them where calculated. In the hyperparameter tuning phase, the only parameter
 that was tuned was the number of mel bins, which was set to either 64 to try the mel-spectrogram or -1
 to use the standard spectrogram.
@@ -115,7 +115,7 @@ for patience = 100 epochs. The model was trined with a batch size of 10. The opt
 optimizer of the PyTorch library with a weight decay of 0. The loss function used was the
 CrossEntropyLoss function of the PyTorch library with default parameters and class weights
 according to available data per class. Different learning rates where tried during the hyperparameter
-tuning referred to in Section \ref{hyperparameter_tuning}. Only the best model was saved and used for
+tuning referred to in \autoref{hyperparameter_tuning}. Only the best model was saved and used for
 the evaluation of the model. In order to simplify the evaluation, on completion of the training
 the whole dataset was predicted and saved to a csv file in the log folder.
 
@@ -125,7 +125,7 @@ the whole dataset was predicted and saved to a csv file in the log folder.
 For the hyperparameter tuning, a select number of hyperparameters where chosen to be tuned.
 Considerations like the experience of some early tests, the computational resources available
 and the time frame of the project where taken into account. The hyperparameters that where
-chosen for the grid search are shown in Table \ref{tab:hyperparameters}. For the grid search,
+chosen for the grid search are shown in \autoref{tab:hyperparameters}. For the grid search,
 models for all possible combinations of the hyperparameters - 
 in this case \( 2 \times 3 \times 2 \times 3 = 36 \) where trained. To implement the grid search a short Python
 script was written to create the system commands to start the training with the different
@@ -163,12 +163,11 @@ using the f1\_score function of the sklearn library with the average parameter s
 \lstinline{f1_score(y_true, y_pred, average=None, sample_weight=None, zero_division='warn')}\\
 It was calculated for each class and for each model from the hyperparameter tuning. The results
 where than aggregated to get the mean F1 score per class over all models. The results where
-than visualized in a bar chart combined with the available data per class - refer to
-figure \ref{fig:f1_per_class}.
+than visualized in a bar chart combined with the available data per class - refer to \autoref{fig:f1_per_class}.
 
 \textbf{Confusion Matrix:} The result of the Predictions of the best model where used to create a confusion matrix.
 The confusion matrix is a table that is often used to analyze the performance of a classification model.
-Predictions and true labels are compared and visualized in a matrix shown in figure \ref{fig:confusion_matrix_best}. 
+Predictions and true labels are compared and visualized in a matrix shown in \autoref{fig:confusion_matrix_best}. 
 The confusion matrix in Figure was calculated using the confusion\_matrix function of the sklearn library.
 
 \textbf{Pearson Test:} The Pearson test was used to test the correlation between the model size and the accuracy

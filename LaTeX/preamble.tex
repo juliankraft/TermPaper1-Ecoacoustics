@@ -58,7 +58,8 @@
 \definecolor{tablegray}{rgb}{0.9,0.9,0.9}
 \colorlet{tableheader}{tablegray}
 % Colors related to hyperref
-\definecolor{linkcolor}{rgb}{0.1, 0.1, 0.1}
+\definecolor{linkcolor}{rgb}{0.0, 0.0, 1.0} %{0.1, 0.1, 0.1}
+\definecolor{urlcolor}{rgb}{0.0, 0.0, 1.0} %{0.1, 0.1, 0.1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Environments
@@ -66,19 +67,18 @@
 
 % \usepackage[ngerman]{babel}    % Language support
 \usepackage[english]{babel}    % Language support
-
 \usepackage[                    % Create hypertext links
     colorlinks=true, 
     allbordercolors={white}, 
-    linkcolor=linkcolor, 
+    linkcolor=linkcolor,
     citecolor=linkcolor, 
     filecolor=linkcolor, 
-    urlcolor=linkcolor]{hyperref}
+    urlcolor=urlcolor
+    ]{hyperref}
 
 \usepackage{graphicx}          % Include graphics
 \usepackage{tabularx}          % Create nicer tables
 \usepackage{booktabs}          % To further beautify tables
-
 \usepackage{caption}           % Customized caption
 \usepackage{subcaption}        % Subfigure captions
 \usepackage{makecell}          % Per-cell formatting in tables (\makecell)
@@ -179,6 +179,10 @@
 % References
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\usepackage[autostyle=true]{csquotes} 
+                               % Required to generate language-dependent quotes 
+                               % in the bibliography
+
 \usepackage[
     backend=biber,               % Use biber backend (an external tool)
     sorting=none,                % Enumerates the reference in order of their appearance
@@ -186,11 +190,8 @@
     uniquename=false,          % Avoids creating unique author lists
     uniquelist=false           % Avoids creating unique author lists
 ]{biblatex}
-\addbibresource{SA1.bib} % The filename of the bibliography
-\usepackage[autostyle=true]{csquotes} 
-                               % Required to generate language-dependent quotes 
-                               % in the bibliography
 
+\addbibresource{SA1.bib} % The filename of the bibliography
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MARGIN SETTINGS
