@@ -357,9 +357,10 @@ class LatexObject:
         for line in self.latex_lines:
             print(line)
 
-    def show(self):
-        print(f"{self.object_type.capitalize()}: {self.label}")
-        print(f"Caption: {self.caption}")
+    def show(self, info: bool = False):
+        if info:
+            print(f"{self.object_type.capitalize()}: {self.label}")
+            print(f"Caption: {self.caption}")
         if self.object_type == "table":
             print(self.create_object())
         elif self.object_type == "figure":
@@ -396,7 +397,7 @@ class LatexObject:
 
         for instance in cls.instances:
             if instance.object_type in select_type:
-                instance.show()
+                instance.show(info=True)
     
     @classmethod
     def export_all(cls):
