@@ -32,10 +32,13 @@ drawio/
 __pycache__/
 *.pyc
 
+# VS code
+.vscode/
+
+
 # macOS
 .DS_Store
 
 # Logs
 events.out*
-
-
+*.cfg
