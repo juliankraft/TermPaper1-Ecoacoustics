@@ -10,40 +10,44 @@
 
 \subsection{Background}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-One of the global environmental issues is the loss of biodiversity \autocite{cardinaleBiodiversityLossIts2012}. 
+The loss of biodiversity is one of the most urgent issues caused by climate and land use change \autocite{cardinaleBiodiversityLossIts2012}. 
 The term biodiversity is a contraction of biological diversity, which refers to the variety and variability of life forms on Earth.
 In recent years, a massive decline in biodiversity has been observed, which is mainly due to human activities. 
 The loss of biodiversity is a major concern because it can have a significant impact on the ecosystem and the services it provides \autocite{brondizioGlobalAssessmentReport2019}. 
-In order to quantify biodiversity and monitor its changes, it is essential to have a reliable and efficient method for quantifying biodiversity.
-Traditional methods for quantifying biodiversity are time-consuming and expensive, and they are not suitable for large-scale monitoring.
-But what if there was a non invasive method that could be used to monitor biodiversity in a fast and efficient way?
+In order to quantify biodiversity and monitor its changes, it is essential to have a reliable and efficient method for quantifying it.
+Many traditional methods for the quantification of biodiversity are time-consuming and expensive, and they are not suitable for large-scale monitoring.
+However, there are modern approaches which have the potential to monitor biodiversity fast and efficiently.
 
-Bioacoustics, the study of sound production, dispersion and reception in animals, is an interesting
+Bioacoustics, the study of sound production, dispersion and reception in animals, is a
 field of research that focusses on the side of an individual species, group or community
 and their interaction with each other or their environment. 
-It has provided amazing insights into the behavior and communication of animals.
-Ecoacoustics, a field of research very close to bioacoustics has a slightly different focus.
-it is the study of the soundscape of an ecosystem - the sounds produced by all living organisms in an ecosystem.
-The questions are typically a bit broader and about the composition of the soundscape, the temporal and spatial patterns of sound production, 
+It has provided pivotal insights into the behavior and communication of animals.
+Ecoacoustics, a field of research very close to bioacoustics, has a slightly different focus.
+it is the study of the soundscape of an ecosystem -- the sounds produced by all living organisms in an ecosystem.
+Ecoacoustics has a broad focus and is concerned with the composition of the soundscape, the temporal and spatial patterns of sound production, 
 and the relationship between the soundscape and the environment. The study of biodiversity using bioacoustics
-is one of its promising applications even though there are still some issues to be fixed \autocite{scarpelliMultiIndexEcoacousticsAnalysis2021}. 
-These passive acoustic monitoring (PAM) like the using of sound recordings to monitor biodiversity are currently widely researched
-and developed and even combined with modern artificial intelligence (AI) methods \autocite{dengHarnessingPowerSound2023}.
+is one of its promising applications, yet there are still major challenges ahead \autocite{scarpelliMultiIndexEcoacousticsAnalysis2021}.
+Among different approaches, the passive acoustic monitoring (PAM) is a promising and non-invasive approach to monitor biodiversity via sound recordings.
+The PAM paradigm is currently intensely studied and advanced, and recently also paired with modern artificial intelligence (AI) methods \autocite{dengHarnessingPowerSound2023}.
 Before there can be a holistic approach to the monitoring of biodiversity using ecoacoustics, some smaller steps have to be taken.
-One of these steps is the classification of the sounds of individual species or taxonomic groups.
-So far the taxonomic coverage includes birds, Cetaceans and other marine mammals, bats, terrestrial mammals,
+
+One of these steps towards the large-scale monitoting of biodiversity via PAM is the classification of the sounds of individual species or taxonomic groups.
+So far, the taxonomic coverage includes birds, cetaceans and other marine mammals, bats, terrestrial mammals,
 anurans, insects and fish \autocite[4]{stowellComputationalBioacousticsDeep2022}.
 Birds are the most studied group of animals in the field of bioacoustics, with a
 commonly known and distributed application called the "BirdNET" \autocite{kahlBirdNETDeepLearning2021}.
 
-The focus of this study is to reproduce the results of the paper \autocite{faissInsectSet32DatasetAutomatic2022} and to create a model 
-that can classify a subset of insects using their voices. The subset contains members of the two groups of insects: \textit{Orthoptera} and \textit{Cicadidae}.
+Recently, the applicability of a deep learning approach to classify insects was demonstrated based on an open-access dataset of a subset of insect voices \autocite{faissInsectSet32DatasetAutomatic2022}.
+The subset contains members of the two groups of insects: \textit{Orthoptera} and \textit{Cicadidae}.
 \textit{Orthoptera} is an order of insects that includes grasshoppers, crickets, and katydids. \autocite{capineraOrthoptera2008}
 \textit{Cicadidae}, a members of the superfamily Cicadoidea Westwood are four-winged insects with sucking 
-mouthparts that possess three ocelli and a rostrum that arises from the base of the head. \autocite{sanbornCicadasHemipteraCicadoidea2008}
-The goal is to proof that this technology is accessible for everyone with the knowledge and a 
-regular gaming computer with a graphic processing unit (GPU). To achieve this, a model will be
-constructed and trained using the same dataset as the original paper. A hyperparameter tuning will be performed to find the best
-configuration for the model. The results of the hyperparameter tuning will be evaluated and discussed.
-The best performing model will be tested and evaluated for its performance and accuracy. The results will be
+mouthparts that possess three ocelli and a rostrum that arises from the base of the head \autocite{sanbornCicadasHemipteraCicadoidea2008}.
+
+The focus of this study is to reproduce the results of this paper and, akin to their approach, to create a model 
+that can classify a subset of insects using their voices.
+More specifically, the goal is to demonstrate that this technology is accessible for everyone with the basic methodological knowledge and a 
+regular gaming computer with a graphic processing unit (GPU). For this purpose, a model was
+constructed and trained using the same dataset as the original paper. A hyperparameter tuning was performed to find the best
+configuration for the model. The results of the hyperparameter tuning were evaluated and discussed.
+The best performing model was tested and evaluated for its performance and accuracy. The results were
 discussed and compared to the results of the original paper.
