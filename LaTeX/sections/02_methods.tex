@@ -10,32 +10,37 @@
 
 \subsection{Dataset}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this study a preexisting dataset is used - the InsectSet32 dataset \autocite{faissInsectSet32DatasetAutomatic2022}. 
+In this study, a preexisting dataset is used -- the InsectSet32 dataset \autocite{faissInsectSet32DatasetAutomatic2022}. 
 The dataset includes 335 recordings of 32 insect species, totaling 57 minutes.
-About half of the recordings (147) feature nine Orthoptera species from a dataset originally compiled by Baudewijn Odé (unpublished). 
-The remaining 188 recordings, from 23 Cicadidae species, were selected from the Global Cicada Sound 
+About half of the recordings (147) feature nine \textit{Orthoptera} species from a dataset originally compiled by Baudewijn Odé (unpublished). 
+The remaining 188 recordings, from 23 \textit{Cicadidae} species, were selected from the Global Cicada Sound 
 Collection on Bioacoustica \autocite{bakerBioAcousticaFreeOpen2015}, including recordings 
-published in \autocites{bakerGlobalCicadaSound2015}{poppleRevisionMyopsaltaCrucifera2017}. 
+published in \autocites{bakerGlobalCicadaSound2015}{poppleRevisionMyopsaltaCrucifera2017}\todo{Is this okay?}. 
 Speech annotations at the beginning of many recordings led to using the last ten seconds of audio. 
-Files with strong noise or multiple species were removed. The number of files per species ranges from four to 22, 
-with durations from 40 seconds to almost nine minutes. All files, originally at least 44.1 kHz, 
+Files with strong noise or multiple species were removed. The number of files per species ranges from 4 to 22, 
+with durations from 40 seconds to almost 9 minutes. All files, originally with a sampling rate of at least 44.1 kHz, 
 were resampled to 44.1 kHz mono WAV for consistency.
 The dataset was already split into training, validation and test sets. There are two .csv files containing
 the labels and the filenames of the recordings.
 
 \subsection{Programming Language and Frameworks}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To build and train the deep learning model, the programming language Python was used.
-The Frameworks PyTorch, Lightning are very popular and powerful tools for building deep learning models.
+The Frameworks PyTorch\replace{,}{and} Lightning are \replace{very popular}{widely used} and powerful tools for building deep learning models.
 
 \subsection{Deep Learning Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The deep learning model used in this study is a convolutional neural network (CNN) with residual blocks
+The deep learning model used in this study is a convolutional neural network (CNN) with residual blocks \autocite[ResNet; ][]{heDeepResidualLearning2016}
 illustrated in \autoref{fig:model_flow_chart}. It consists of three main parts: An input layer,
-a number of residual blocks and an fully connected output layer. The input layer is a convolutional layer with a kernel
-size of 1 and and output channels set to the base channels (bc) - for this experiment it was set to 8.
+a number of stacked residual blocks and an fully connected output layer. The input layer is a convolutional layer with a kernel
+size of 1 and and output channels set to the base channels (bc) -- for this experiment it was set to 8.
+Note that a convolution with a kernel size of 1 is equivalent to using a fully-connected feed-forward layer.
 After the convolutional layer, the input is normed with a batch normalization layer and then passed through
-a ReLU activation function. This output is than passed trough a number of residual blocks. The model is
-implemented dynamically, so the number of residual blocks can be set as a hyperparameter. Each residual block
+a ReLU activation function. Batch normalization can make the training of neural networks more robust and faster, 
+and the ReLU activation introduces non-linearity \autocite{Goodfellow-et-al-201}.
+The output is than passed trough a number of residual blocks, where
+Residual connections facilitate the training of deep neural networks by enabling smoother flow of gradients 
+during backpropagation, i.e., the backward pass performed to compute the model gradients \autocite{Goodfellow-et-al-201}. 
+The model is implemented dynamically, so the number of residual blocks can be set as a hyperparameter. Each residual block
 consists of two convolutional layers, each followed by a batch normalization layer and a ReLU activation function.
 The output channels are doubled with every residual block.
 The residual connection is implemented by passing the input trough a separated convolutional layer with a kernel size of 1
@@ -43,13 +48,12 @@ and the same number of output channels as the output of the convolutional layers
 match dimensions. This output is than added to the output of the transformation in the residual block.
 At the end of the residual block, the output is passed trough a max pooling layer to reduce the dimensions.
 The max pooling layer is implemented to alter the kernel size with every residual block. For every odd residual block
-the kernel size is set to n\_max\_pool - in this experiment it was set to 3 - reducing the dimensions by a factor of 3.
+the kernel size is set to n\_max\_pool -- in this experiment it was set to 3 -- reducing the dimensions by a factor of 3.
 For every even residual block the kernel size is set to 1, so the dimensions stay the same. The output of the residual blocks
-is than passed trough a fully connected layer, consisting of a 
-global average pooling layer to reduce the dimensions to the number of classes. An additional
-convolutional layer with kernel size 1 to match the number of classes. A flattening layer to get of the dimensions H and W
-already reduced to 1 and a softmax activation function to get the probabilities for each class as a vector of length n\_classes
-- in this experiment 32 - elements between 0 and 1 that sum up to 1.
+is passed through a dynamic global average pooling layer, and then passed through a fully-connected feed-forward layer. An additional
+convolutional layer with kernel size 1 to match the number of classes. The output was flattened and passed through a 
+softmax activation function to get the probabilities for each class as a vector of length 
+n\_classes -- in this experiment 32 -- elements between 0 and 1 that sum up to 1.
 
 \subsection{Data Processing}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A custom Dataloader was implemented, to handle the data processing on the fly
@@ -59,13 +63,13 @@ For the data processing, the torchaudio and numpy libraries where used.
 There is two steps to the data processing: Sampling and Transformation.
 
 \subsubsection{Sampling}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The audio files are of different lengths and the model can only handle inputs of a fixed size.
+The audio files are of different lengths and the model was fed with consistent, potentially zero-padded samples for consistency.
 Since the smallest files are of a length of around 1 second and the longest file is around
-160 seconds, a compromise had to be made. To only sample the files to a length of 1 second
+160 seconds, a compromise had to be made. On the one hand, trimming the files to a length of 1 second
 would mean very little information being available for the model to learn from. On the other
-hand if the files are sampled for a length of more than a second, the short files would need
-to be padded with zeros meaning the file starts with a basically empty part. This could lead
-to the model learning from the length of the empty part and not the actual audio signal.
+hand, if the files are sampled for a length of more than a second, the short files would need
+to be padded with zeros meaning the file starts with an empty part. This could lead
+to the model learning from the length of the empty part and not the actual audio signal, i.e., it would be prone to overfitting.
 To avoid this, the audio files where sampled to a random length between 1 and 10 seconds and
 then padded with zeros to the fixed length of 10 seconds. To implement this, a custom method
 was implemented as shown in \autoref{lst:sampling}.
@@ -75,26 +79,22 @@ was implemented as shown in \autoref{lst:sampling}.
 %===========================%
 
 \subsubsection{Transformation}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The model is actually one, usually used for image classification and therefore expects
-two dimensional input while an audio file has only one dimension. To transform the samples into
-into a format, that the model can handle, a short time Fourier transformation  (STFT) was applied.
-The Fourier transformation is a mathematical operation that transforms a function of time
-into a function of frequency. An other way to describe this is, that a series of spectrograms
-for short time slices of the audio signal are created and aligned in a 2D array - basically
-a visualization of the audio signal and therefore something a image classification model can handle.
-In addition a second version was implemented, where the STFT where transformed additionally.
-The two versions are visualized for a random sample with no padding in \autoref{fig:compare_spectrogram}.
-The frequency bins were transformed into mel bins, which are a more human like representation
-of the frequency content of the audio signal. This transformation is called a mel-spectrogram
-and is commonly used in the field of ecoacoustics \autocite[7]{stowellComputationalBioacousticsDeep2022}.
-Both versions of the transformation where transformed into decibels and normalized before 
+Audio signals are rich in information, but also contain spurious information.
+One way to condense the the information content of audio data is the transformation via spectrograms.
+A spectrogram is constructed using short time Fourier transformation (STFT).
+The STFT applies a mathematical transformation to short windows in the time domain, and transfers them from the time into the frequency domain.
+The transformed snippets are aligned along the time dimension, and thereby, we obtain a two-dimensional, compressed version of the original audio signal.
+As an extension of the plain spectrogram, the Mel spectrogram enhances certain frequencies, 
+such that it reflects the frequencies which are perceived stronger by the the human ear, which is more sensitive to low frequencies.
+This transformation is commonly used in the field of ecoacoustics \autocite[7]{stowellComputationalBioacousticsDeep2022}.
+A visualization of the two transformation -- the plain spectrogram, and the Mel spectrogram---is provided in \autoref{fig:compare_spectrogram}
+for a random sample with no padding. Both versions of the transformation where transformed into decibels and normalized before 
 being passed into the model.
-
 To implement the two varieties of the transformation, the library torch and torchaudio where used.
 A custom transformation method was implemented, that can be used as a layer in the model as shown in 
 \autoref{lst:transformation}. Some of the parameters of the transformation where made configurable
 and others dependant on them where calculated. In the hyperparameter tuning phase, the only parameter
-that was tuned was the number of mel bins, which was set to either 64 to try the mel-spectrogram or -1
+that was tuned was the number of mel bins, which was set to either 64 to use the mel-spectrogram or -1
 to use the standard spectrogram.
 
 %==== listing: transformation ====%
@@ -103,18 +103,19 @@ to use the standard spectrogram.
 
 \subsection{Fitting the Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The training was completely handled by the PyTorch Lightning framework. The logging was done
+The training was handled by the PyTorch Lightning framework. The logging was done
 with the TensorBoard logger and with an additional custom logger to get easier access to the
 data afterwards. The hyperparameter grid search was implemented with a custom Python script.
 
 \subsubsection{Training}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The training was done on a single GPU. The model was trained for a maximum of 2000 epochs
-with a early stopping callback, that stopped the training if the validation loss did not improve
-for patience = 100 epochs. The model was trined with a batch size of 10. The optimizer used was the AdamW
+with an early stopping callback, that stopped the training if the validation loss did not improve
+for a patience of 100 epochs and the best model was restored. The model was trained with a batch size of 10. The optimizer used was the AdamW
 optimizer of the PyTorch library with a weight decay of 0. The loss function used was the
 CrossEntropyLoss function of the PyTorch library with default parameters and class weights
-according to available data per class. Different learning rates where tried during the hyperparameter
+inversely proportional to the available data per class, in order to give more emphasis to classes with fewer samples. 
+Different learning rates where evaluated during the hyperparameter
 tuning referred to in \autoref{hyperparameter_tuning}. Only the best model was saved and used for
 the evaluation of the model. In order to simplify the evaluation, on completion of the training
 the whole dataset was predicted and saved to a csv file in the log folder.
@@ -126,8 +127,8 @@ For the hyperparameter tuning, a select number of hyperparameters where chosen t
 Considerations like the experience of some early tests, the computational resources available
 and the time frame of the project where taken into account. The hyperparameters that where
 chosen for the grid search are shown in \autoref{tab:hyperparameters}. For the grid search,
-models for all possible combinations of the hyperparameters - 
-in this case \( 2 \times 3 \times 2 \times 3 = 36 \) where trained. To implement the grid search a short Python
+models for all possible combinations of the hyperparameters -- in this case \( 2 \times 3 \times 2 \times 3 = 36 \) 
+where trained. To implement the grid search a short Python
 script was written to create the system commands to start the training with the different
 hyperparameter combinations.
 
@@ -137,11 +138,11 @@ hyperparameter combinations.
 
 \subsection{Evaluation}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To evaluate the models, the predictions already implemented at the end of the training.
-The output of the model was a vector of length 32 with probabilities for each class, they where
+The models were evaluated based on the predictions performed at the end of the training.
+The output of the model was a vector of length 32 with probabilities for each class, which where
 transformed into a predicted class ID by taking the index of the highest probability
 using the argmax function of the numpy library. For all the models they where stored in a csv file
-in their log folder. To evaluate the hyperparameter tuning the predictions of the validation set
+in their log folder. To evaluate the hyperparameter tuning, the predictions of the validation set
 where used, as they where not used during the training of the model except for the early stopping
 and the selection of the best model. To evaluate the best model, only the predictions of the test set
 where used.
@@ -151,24 +152,25 @@ where used.
 \textbf{Accuracy:} The accuracy is the ratio of correctly predicted observations to the total observations.
 It was calculated using the mean function of the numpy library:\\ 
 \lstinline{np.mean(y_true == y_pred)}
-The accuracy was the metric chosen to chose the best model for further evaluation.
+The accuracy was the metric chosen to select the best model for further evaluation.
+Note that the accuracy can be misleading, as it does not take into account class imbalances, 
+and it is possible to achieve a high accuracy overall while incorrectly classifying classes with fewer samples.
 
 \textbf{F1 Score:} The F1 score is a metric that combines the precision and recall of a model. In this
 case the macro average was used, which calculates the F1 score for each class and then takes the mean.
 It was calculated using the f1\_score function of the sklearn library:\\ 
 \lstinline{f1_score(y_true, y_pred, average='macro', sample_weight=None, zero_division='warn')}
 
-\textbf{F1 Score per Class:} The F1 score per class is the F1 score for each class. It was calculated
+\textbf{F1 Score per Class:} The F1 score per class was calculated
 using the f1\_score function of the sklearn library with the average parameter set to None:\\
 \lstinline{f1_score(y_true, y_pred, average=None, sample_weight=None, zero_division='warn')}\\
 It was calculated for each class and for each model from the hyperparameter tuning. The results
-where than aggregated to get the mean F1 score per class over all models. The results where
-than visualized in a bar chart combined with the available data per class - refer to \autoref{fig:f1_per_class}.
+where than aggregated to get the mean F1 score per class over all models.
 
 \textbf{Confusion Matrix:} The result of the Predictions of the best model where used to create a confusion matrix.
 The confusion matrix is a table that is often used to analyze the performance of a classification model.
-Predictions and true labels are compared and visualized in a matrix shown in \autoref{fig:confusion_matrix_best}. 
-The confusion matrix in Figure was calculated using the confusion\_matrix function of the sklearn library.
+Predictions and true labels are compared and visualized in a matrix it was calculated using the 
+confusion\_matrix function of the sklearn library.
 
 \textbf{Pearson Test:} The Pearson test was used to test the correlation between the model size and the accuracy
 or F1 score of the models. The Pearson test was calculated using the pearsonr function of the scipy library:\\
