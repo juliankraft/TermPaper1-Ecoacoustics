@@ -310,7 +310,7 @@ class LatexObject:
         
     def get_latex_lines(
             self, 
-            position = "h", 
+            position = "H", 
             caption_width = 0.8):
         
         if self.object_type == "figure":
