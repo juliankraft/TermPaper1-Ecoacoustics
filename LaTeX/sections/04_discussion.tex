@@ -11,63 +11,60 @@
 
 \subsection{Hyperparameter Tuning}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The detailed results of the Hyperparameter tuning are shown in \autoref{tab:hyperparameters_results}.
+The detailed results of the hyperparameter tuning are shown in \autoref{tab:hyperparameters_results}.
 It is quite difficult to find any obvious tendencies for the influence of the
 hyperparameters on the performance of the model. There is no direct correlation
 between the model size and the performance of the model. This might be explicable
-by the fact that the available data is not sufficient to train larger models.
+by the fact that the available data is not sufficient to train larger models
 This could be helped by extending the dataset with additional recordings or by
-implementing some sort of data augmentation. Some ideas being to add random levels
-of noise to the recordings or to randomly add slight shifts in time or frequency.
+implementing some sort of data augmentation \autocite[3]{stowellComputationalBioacousticsDeep2022}. 
+Some ideas being to add random levels of noise to the recordings or to randomly add slight shifts in time or frequency.
 An other approach could be to mix data from different classes to create new samples.
-This would have two main advantages. First the combination possibilities are endless
-and therefore the dataset could be extended massively. Second the model would be
+This would have two main advantages. First, the combination possibilities are nearly endless
+and therefore the dataset could be extended massively. Second, the model would be
 trained to to detect multiple classes in one sample wich could be useful in a real
-world scenario where multiple species are present at the same time. In order to
-implement this, the output layer of the model must be changed - specifically the
-softmax activation function must be replaced by a sigmoid activation function.
+world scenario where multiple species are present at the same time.
 The data augmentation could be implemented in the dataloader to be done on the fly.
 
-An other thing to look into is the selection of the hyperparameters. Dew to limited
-resources the hyperparameter tuning was done with a limited number of configurations.
-There is still a list of potential hyperparameters that could be tested. As an example
-the base channels after the in layer or different parameters for the transformation
-such as the hop length, window size or the number of mel bins. As the model is, the
-kernel size stays the same for all layers - the possibilities there are endless.
+An other aspect to look into is the selection of the hyperparameters. Due to limited
+resources, the hyperparameter tuning was done with a limited number of configurations.
+There is still a list of potential hyperparameters that could be tested. As an example,
+the base channels after the input layer, or different parameters for the transformation
+such as the hop length, window size or the number of mel bins could be further investigated. As the model is, the
+kernel size stays constant for all layers -- the possibilities there are endless.
+Furthermore, other deep learning architectures could be explored. 
+It is possible that -- given the low amount of training samples -- a smaller 
+and more efficient model architecture could perform better than the ResNet used here.
 
-\subsection{Performance of the best Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Comparison of Results with Original Study}%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Using the best performing configuration it is worth to take a closer look to the
-training process of the model. The validation accuracy and loss at the end of
-every epoch is shown in \autoref{fig:loss_acc_best}. The graphs show a typical
-training process. The validation accuracy is increasing while the validation loss
-is decreasing. Towards the end both graphs are flattening out which is a sign that
-the model was not learning anymore when the training was stopped. So the patience
-of 100 for the early stopping was an appropriate choice. Since the validation loss
-and accuracy are very noisy it was necessary to use a patience that high. This might
-be a sign, that the data processing or the model architecture could be improved.
-
-%==== figure: loss_acc_best ====%
-\input{figures/loss_acc_best.tex}
-%===============================%
-
-In the original paper \autocite{faissAdaptiveRepresentationsSound2023}
-the model was used on different datasets and with different models. Furthermore the model was
-run five times with different seeds and the accuracy was averaged. The model using a MelSpectrogram
+In the original paper \autocite{faissAdaptiveRepresentationsSound2023},
+different datasets and models were evaluated. The model was
+run five times with different seeds and the accuracy was averaged to achieve an ensemble of predictions, 
+which can be more robust. The model using a MelSpectrogram
 frontend on the InsectSet32 dataset achieved an mean accuracy of 0.6 with a range of 0.57 to 0.65
 on the validation set and an accuracy of 0.62 with a range of 0.57 to 0.67 on the test set.
 The best performing configuration for the model in this study achieves an accuracy of 0.706 on the validation set
-and an accuracy of 0.649. For the test set this is well in the range of the original paper.
+and an accuracy of 0.649. For the test set, this is well in the range of the original paper.
 Why the model in this study performs better on the validation set compared to the difference
 between the validation and test set in the original paper is not clear. The accuracy achieved
 by the model with the other frontend from the original paper is unreached by the model in this study.
-So there is still room for improvement especially in the data processing.
+Consequently, there is still room for improvement especially in the data processing and, as already mentioned, data augmentation.
 
-\subsection{Sum Up}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conclusion}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To sum up, the model was successfully trained and evaluated. The results are comparable to the results
-of the original paper. The model is able to classify the sounds of a limited subset of insects with an accuracy of 0.649.
-This was all done on a regular gaming computer with a GPU by a student with none to little experience
-in the field of deep learning - notbabel with quite some demand for support.
-Still it is save to say that this technology has become accessible to everyone 
-with the knowledge and some quite affordable hardware.
+Species classification with deep learning can support the non-invasive monitoring of biodiversity.
+However, the advanced methodological approaches and computation demands needed for such endeavors can be an obstacle.
+In this study, I reproduced a prior study on classifying insects based on an open-access dataset.
+I wanted to investigate whether the results can be replicated with limited technical knowhow, 
+computational resources, and under temporal constraints.
+The model was trained on a regular gaming computer with a GPU by a student with none to little experience
+in the field of deep learning -- notable with quite some demand for support (see Acknowledgments \ref{acknowledgment_declaration}).
+Still, it is save to say that this technology has become broadly accessible.
+The model performance was comparable to the original study in terms of accuracy.
+The model was able to classify the sounds of a limited subset of insects with an accuracy of 0.649.
+I identified some shortcomings of the approach:
+The training dataset is rather small, and additional samples could potentially improve the results further.
+Similarly, data augmentation could enhance the classification skill.
+I encourage the investigation of additional deep learning model architectures and 
+an an exhaustive sampling of the hyperparameter space to further improve model performance.

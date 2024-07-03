@@ -23,12 +23,20 @@ For the Mel spectrogram, the best performance was observed with 3 ResBlocks, whi
 Furthermore, there was a tendency for smaller kernel sizes to deliver more robust results,
 and the best performance was achieved with a kernel size of 5.
 
+%==== figure: hyperparameters_boxplot ====%
+\input{figures/hyperparameters_boxplot.tex}
+%=========================================%
+
 In \autoref{fig:hyperparameters_scatterplot}, the
 models size measured by the number of trainable parameters is plotted against the accuracy and the F1 score.
 There was no obvious correlation visible between the model size and the performance of the model.
 This is also supported by the results of the Pearson Test. For both metrics, the p value was clearly above 0.05 
 (the chosen confidence interval), i.e., the null hypothesis -- that there is no relationship between the performance and the number of model parameters -- had to be rejected.
 The r values were both quite close to zero but negative, which indicates that there might be a slight -- yet not significant -- tendency for a smaller model to perform better.
+
+%==== figure: hyperparameters_scatterplot ====%
+\input{figures/hyperparameters_scatterplot.tex}
+%=============================================%
 
 The F1 score per class is shown in \autoref{fig:f1_per_class} and compared to the distribution
 of the available data. Class 11 has a very low F1 score compared to the available data while class 9 has a very high F1 Score
@@ -37,14 +45,6 @@ in \autoref{fig:f1_per_class_to_data_distribution}, the F1 score is plotted agai
 There is no obvious correlation visible between the F1 score and the distribution of the data. This is also supported by the results
 of the Pearson Test. The p value is above 0.05, i.e., we accept the null hypothesis that there is no significant relationship. The r value
 is positive, and therefore, there might be a slight tendency for more training data to deliver a better F1 score.
-
-%==== figure: hyperparameters_boxplot ====%
-\input{figures/hyperparameters_boxplot.tex}
-%=========================================%
-
-%==== figure: hyperparameters_scatterplot ====%
-\input{figures/hyperparameters_scatterplot.tex}
-%=============================================%
 
 %==== figure: f1_per_class ====%
 \input{figures/f1_per_class.tex}
@@ -74,3 +74,15 @@ Class 22 was predicted the most frequent with more than 50\% of the predictions 
 %==== figure: confusion_matrix_best ====%
 \input{figures/confusion_matrix_best.tex}
 %=======================================%
+
+Next, we take a closer look at the training curves of the best-performing model. The validation accuracy and loss at the end of
+every epoch is shown in \autoref{fig:loss_acc_best}. The graphs show a typical
+training process. The validation accuracy is increasing while the validation loss
+is decreasing. Towards the end, both graphs are flattening out which is a sign that
+the model was not learning anymore when the training was stopped. This indicates that the patience
+of 100 for the early stopping was an appropriate choice. Since the validation loss
+and accuracy are very noisy, it was necessary to use a large patience value.
+
+%==== figure: loss_acc_best ====%
+\input{figures/loss_acc_best.tex}
+%===============================%

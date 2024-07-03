@@ -55,6 +55,10 @@ convolutional layer with kernel size 1 to match the number of classes. The outpu
 softmax activation function to get the probabilities for each class as a vector of length 
 n\_classes -- in this experiment 32 -- elements between 0 and 1 that sum up to 1.
 
+%==== figure: model_flow_chart ====%
+\input{figures/model_flow_chart.tex}
+%==================================%
+
 \subsection{Data Processing}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A custom Dataloader was implemented, to handle the data processing on the fly
 and provide the trainer with then data samples matching the chosen indices.
@@ -97,6 +101,10 @@ and others dependant on them where calculated. In the hyperparameter tuning phas
 that was tuned was the number of mel bins, which was set to either 64 to use the mel-spectrogram or -1
 to use the standard spectrogram.
 
+%==== figure: compare_spectrogram ====%
+\input{figures/compare_spectrogram.tex}
+%=====================================%
+
 %==== listing: transformation ====%
 \input{listings/transformation.tex}
 %=================================%
@@ -116,7 +124,7 @@ optimizer of the PyTorch library with a weight decay of 0. The loss function use
 CrossEntropyLoss function of the PyTorch library with default parameters and class weights
 inversely proportional to the available data per class, in order to give more emphasis to classes with fewer samples. 
 Different learning rates where evaluated during the hyperparameter
-tuning referred to in \autoref{hyperparameter_tuning}. Only the best model was saved and used for
+tuning referred to in section \ref{hyperparameter_tuning}. Only the best model was saved and used for
 the evaluation of the model. In order to simplify the evaluation, on completion of the training
 the whole dataset was predicted and saved to a csv file in the log folder.
 
@@ -180,10 +188,3 @@ And the correlation between the train data count and the F1 score per class:\\
 \lstinline{pearson_corr, p_value = stats.pearsonr(data['f1'], data['count'])}\\
 For both cases the null hypothesis (H0) posited that there is no correlation, with the significance level (alpha) set at 0.05.
 
-%==== figure: compare_spectrogram ====%
-\input{figures/compare_spectrogram.tex}
-%=====================================%
-
-%==== figure: model_flow_chart ====%
-\input{figures/model_flow_chart.tex}
-%==================================%
