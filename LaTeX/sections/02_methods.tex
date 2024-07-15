@@ -91,7 +91,7 @@ The transformed snippets are aligned along the time dimension, and thereby, we o
 As an extension of the plain spectrogram, the Mel spectrogram enhances certain frequencies, 
 such that it reflects the frequencies which are perceived stronger by the the human ear, which is more sensitive to low frequencies.
 This transformation is commonly used in the field of ecoacoustics \autocite[7]{stowellComputationalBioacousticsDeep2022}.
-A visualization of the two transformation -- the plain spectrogram, and the Mel spectrogram---is provided in \autoref{fig:compare_spectrogram}
+A visualization of the two transformation -- the plain spectrogram, and the Mel spectrogram -- is provided in \autoref{fig:compare_spectrogram}
 for a random sample with no padding. Both versions of the transformation where transformed into decibels and normalized before 
 being passed into the model.
 To implement the two varieties of the transformation, the library torch and torchaudio where used.
