@@ -365,6 +365,7 @@ class LatexObject:
             print(self.create_object())
         elif self.object_type == "figure":
             self.create_object()
+            plt.tight_layout()
             plt.show()
     
     def export(self):

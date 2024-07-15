@@ -21,7 +21,12 @@ Files with strong noise or multiple species were removed. The number of files pe
 with durations from 40 seconds to almost 9 minutes. All files, originally with a sampling rate of at least 44.1 kHz, 
 were resampled to 44.1 kHz mono WAV for consistency.
 The dataset was already split into training, validation and test sets. There are two .csv files containing
-the labels and the filenames of the recordings.
+the labels and the filenames of the recordings. To demonstrate the difference and uniqueness of the insect voices, some examples are shown 
+as Mel spectrograms in \autoref{fig:compare_some_examples}.
+
+%==== figure: compare_some_examples ====%
+\input{figures/compare_some_examples.tex}
+%=======================================%
 
 \subsection{Programming Language and Frameworks}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To build and train the deep learning model, the programming language Python was used.
@@ -65,7 +70,7 @@ and provide the trainer with then data samples matching the chosen indices.
 To implement the dataloader, the PyTorch Dataset and DataLoader classes where used.
 For the data processing, the torchaudio and numpy libraries where used.
 There is two steps to the data processing: Sampling and Transformation.
-
+z
 \subsubsection{Sampling}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The audio files are of different lengths and the model was fed with consistent, potentially zero-padded samples for consistency.
 Since the smallest files are of a length of around 1 second and the longest file is around
