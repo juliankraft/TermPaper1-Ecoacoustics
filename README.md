@@ -9,7 +9,7 @@ This study aims to reproduce the results of a previous research on insect sound 
 **Institution:**    Zurich University of Applied Sciences (ZHAW)
 **Program:**        BSc Natural Resource Sciences  
 **Project:**        Term Paper 1  
-**Date:**           2024-06-18
+**Date:**           2024-07-16
 
 **Data:** InsectSet32 dataset from Zenodo: [link](https://zenodo.org/records/7072196)
 
