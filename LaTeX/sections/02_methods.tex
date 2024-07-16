@@ -10,7 +10,7 @@
 
 \subsection{Dataset}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this study, a preexisting dataset is used -- the InsectSet32 dataset \autocite{faissInsectSet32DatasetAutomatic2022}. 
+In this study, a preexisting dataset was used -- the InsectSet32 dataset \autocite{faissInsectSet32DatasetAutomatic2022}. 
 The dataset includes 335 recordings of 32 insect species, totaling 57 minutes.
 About half of the recordings (147) feature nine \textit{Orthoptera} species from a dataset originally compiled by Baudewijn Odé (unpublished). 
 The remaining 188 recordings, from 23 \textit{Cicadidae} species, were selected from the Global Cicada Sound 
@@ -22,7 +22,8 @@ with durations from 40 seconds to almost 9 minutes. All files, originally with a
 were resampled to 44.1 kHz mono WAV for consistency.
 The dataset was already split into training, validation and test sets. There are two .csv files containing
 the labels and the filenames of the recordings. To demonstrate the difference and uniqueness of the insect voices, some examples are shown 
-as Mel spectrograms in \autoref{fig:compare_some_examples}. A detailed overview of the dataset is provided in \autoref{tab:overview_dataset}.
+as Mel spectrograms in \autoref{fig:compare_some_examples}. A detailed overview of the dataset 
+and the data distribution is provided in \autoref{tab:overview_dataset}.
 
 %==== figure: compare_some_examples ====%
 \input{figures/compare_some_examples.tex}
@@ -31,6 +32,7 @@ as Mel spectrograms in \autoref{fig:compare_some_examples}. A detailed overview 
 \subsection{Programming Language and Frameworks}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To build and train the deep learning model, the programming language Python was used.
 The Frameworks PyTorch and Lightning are widely used and powerful tools for building deep learning models.
+
 
 \subsection{Deep Learning Model}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -70,7 +72,7 @@ and provide the trainer with then data samples matching the chosen indices.
 To implement the dataloader, the PyTorch Dataset and DataLoader classes where used.
 For the data processing, the torchaudio and numpy libraries where used.
 There is two steps to the data processing: Sampling and Transformation.
-z
+
 \subsubsection{Sampling}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The audio files are of different lengths and the model was fed with consistent, potentially zero-padded samples for consistency.
 Since the smallest files are of a length of around 1 second and the longest file is around
@@ -122,8 +124,8 @@ data afterwards. The hyperparameter grid search was implemented with a custom Py
 
 \subsubsection{Training}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The training was done on a single GPU. The model was trained for a maximum of 2000 epochs
-with an early stopping callback, that stopped the training if the validation loss did not improve
+The training was done on a single GPU. There was no limit to the maximum of training epochs but an
+early stopping callback, that stopped the training if the validation loss did not improve
 for a patience of 100 epochs and the best model was restored. The model was trained with a batch size of 10. The optimizer used was the AdamW
 optimizer of the PyTorch library with a weight decay of 0. The loss function used was the
 CrossEntropyLoss function of the PyTorch library with default parameters and class weights
